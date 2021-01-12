@@ -105,9 +105,9 @@ def aes_encrypt_message(msg, aes_key):
                 raise ValueError('Invalid type of data given for AES encryption.')
 
         if sys.version_info[0] < 3 or sys.version_info[1] < 4:
-            timestamp = pad(str(time.mktime(datetime.now().timetuple()))).encode('utf-8')
+            timestamp = pad(str(time.mktime(datetime.utcnow().timetuple()))).encode('utf-8')
         else:
-            timestamp = pad(str(datetime.now().timestamp())).encode('utf-8')
+            timestamp = pad(str(datetime.utcnow().timestamp())).encode('utf-8')
         return nonce + tag + timestamp + ciphertext
     except Exception as exc:
         raise ValueError('Cannot AES encrypt data: %s.' % exc)
@@ -148,9 +148,9 @@ def aes_decrypt_message(msg, aes_key):
     source_timestamp = float(unpad(timestamp.decode('utf-8')))
     # Python < 3.4 does not have timestamp() attribute
     if sys.version_info[0] < 3 or sys.version_info[1] < 4:
-        timestamp_now = time.mktime(datetime.now().timetuple())
+        timestamp_now = time.mktime(datetime.utcnow().timetuple())
     else:
-        timestamp_now = datetime.now().timestamp()
+        timestamp_now = datetime.utcnow().timestamp()
     if source_timestamp > timestamp_now:
         raise ValueError('Timestamp is in future')
     source_timestamp = datetime.fromtimestamp(source_timestamp)
