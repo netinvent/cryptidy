@@ -3,6 +3,10 @@
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/netinvent/cryptidy.svg)](http://isitmaintained.com/project/netinvent/Cryptidy "Percentage of issues still open")
+[![Maintainability](https://api.codeclimate.com/v1/badges/be5d6edea1288951dc07/maintainability)](https://codeclimate.com/github/netinvent/cryptidy/maintainability)
+[![codecov](https://codecov.io/gh/netinvent/cryptidy/branch/master/graph/badge.svg?token=E5D9oVnqj7)](https://codecov.io/gh/netinvent/cryptidy)
+[![Build Status](https://travis-ci.com/netinvent/cryptidy.svg?branch=master)](https://travis-ci.com/netinvent/cryptidy)
+[![GitHub Release](https://img.shields.io/github/release/netinvent/cryptidy.svg?label=Latest)](https://github.com/netinvent/cryptidy/releases/latest)
 
 This library has been written to make encryption / decryption of any python object as simple as possible.
 It is based on AES encryption (265 or 128 bytes).
