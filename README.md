@@ -15,6 +15,7 @@ It's main features are:
  - Allow asymmetric encryption (RSA + AES)
      - 1024, 2048 or 4096 bits encryption using AES128 (1024 bits RSA) or AES256 (2048 or 4096 bits RSA)
  - Provide the encypted data s base64 string for maximum portability between OSes and encodings
+ - Unload AES key from memory as soon as possible to help prevent memory attacks
 
 # Setup
 
