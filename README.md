@@ -19,6 +19,8 @@ It's main features are:
 
 # Setup
 
+cryptidy requires Python 3.4+
+
 `pip install cryptidy`
 
 
