@@ -20,7 +20,7 @@ __author__ = 'Orsiris de Jong'
 __copyright__ = 'Copyright (C) 2020-2021 Orsiris de Jong'
 __licence__ = 'BSD 3 Clause'
 __version__ = '1.0.4'
-__build__ = '2021011101'
+__build__ = '202101201'
 
 
 import sys
