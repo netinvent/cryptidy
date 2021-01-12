@@ -83,6 +83,7 @@ def verify_public_key(public_key):
     if public_key is None:
         raise TypeError('No private key provided.')
 
+    print(type(public_key))
     if not isinstance(public_key, str):
         raise TypeError('Wrong private key provided. PEM encoded key should be passed, not bytes.')
     if '-----BEGIN PUBLIC KEY-----\n' not in public_key:
