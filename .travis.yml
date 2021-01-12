@@ -55,9 +55,9 @@ matrix:
       sudo: required
       env: PYTHON=pypy
 
-#env:
-#  global:
-#    - CODECOV_TOKEN=""
+env:
+  global:
+    - CODECOV_TOKEN="196cc083-fe69-41b8-9736-8ab8b4133387"
 
 install:
   - "pip install pycryptodomex"
