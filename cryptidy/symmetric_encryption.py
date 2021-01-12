@@ -20,7 +20,7 @@ __author__ = 'Orsiris de Jong'
 __copyright__ = 'Copyright (C) 2018-2021 Orsiris de Jong'
 __licence__ = 'BSD 3 Clause'
 __version__ = '1.0.4'
-__build__ = '2021011101'
+__build__ = '2021011201'
 
 # Earlier versions of cryptidy <1.0.0 require to uncomment # COMPAT-0.9 comments
 
@@ -59,8 +59,12 @@ def verify_key(aes_key):
 
     if not len(aes_key) in [16, 24, 32]:
         raise TypeError('Wrong encryption key provided. Allowed key sizes are 16, 24 or 32 bytes.')
-    if 'BEGIN' in aes_key.decode('utf-8', errors='backslashreplace'):
-        raise TypeError('Wrong encryption key provided. This looks like an RSA key.')
+    try:
+        if 'BEGIN' in aes_key.decode('utf-8', errors='backslashreplace'):
+            raise TypeError('Wrong encryption key provided. This looks like an RSA key.')
+    except UnicodeDecodeError:
+        # On earlier Python versions, keys cannot be decoded
+        pass
     if not isinstance(aes_key, bytes):
         raise TypeError('Wrong encryption key provided. Key type should be binary.')
 
