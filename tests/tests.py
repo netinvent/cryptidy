@@ -115,6 +115,11 @@ def test_asym_selftest():
         print('\nTesting with %s bits RSA key.\n' % key_size)
         priv_key, pub_key = asymmetric_encryption.generate_keys(key_size)
 
+        print(priv_key)
+        print(pub_key)
+        print(type(priv_key))
+        print(type(pub_key))
+
         assert '-----END RSA PRIVATE KEY-----' in priv_key, 'Bogus privkey generated.'
         assert '-----END PUBLIC KEY-----' in pub_key, 'Bogus pubkey generated.'
 
