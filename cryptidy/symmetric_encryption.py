@@ -62,7 +62,7 @@ def verify_key(aes_key):
     try:
         if 'BEGIN' in aes_key.decode('utf-8', errors='backslashreplace'):
             raise TypeError('Wrong encryption key provided. This looks like an RSA key.')
-    except UnicodeDecodeError:
+    except (UnicodeDecodeError, TypeError):
         # On earlier Python versions, keys cannot be decoded
         pass
     if not isinstance(aes_key, bytes):
