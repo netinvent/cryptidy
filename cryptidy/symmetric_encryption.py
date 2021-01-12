@@ -25,10 +25,13 @@ __build__ = '2021011201'
 # Earlier versions of cryptidy <1.0.0 require to uncomment # COMPAT-0.9 comments
 
 
+import sys
 from logging import getLogger
 from base64 import b64encode, b64decode
 from binascii import Error as binascii_Error
 from datetime import datetime
+if sys.version_info[0] < 3 or sys.version_info[1] < 4:
+    import time
 import pickle
 
 # Try to import as absolute when used as module, import as relative for autotests
@@ -47,7 +50,6 @@ try:
     from typing import Any, Union, Tuple
 except ImportError:
     pass
-
 logger = getLogger(__name__)
 
 
@@ -102,7 +104,10 @@ def aes_encrypt_message(msg, aes_key):
             else:
                 raise ValueError('Invalid type of data given for AES encryption.')
 
-        timestamp = pad(str(datetime.now().timestamp())).encode('utf-8')
+        if sys.version_info[0] < 3 or sys.version_info[1] < 4:
+            timestamp = pad(str(time.time())).encode('utf-8')
+        else:
+            timestamp = pad(str(datetime.now().timestamp())).encode('utf-8')
         return nonce + tag + timestamp + ciphertext
     except Exception as exc:
         raise ValueError('Cannot AES encrypt data: %s.' % exc)
