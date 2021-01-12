@@ -2,11 +2,11 @@ language: python
 
 matrix:
   include:
-    #- os: linux
-    #  python: 2.7
-    #  dist: xenial
-    #  sudo: required
-    #  env: PYTHON=python2.7
+    - os: linux
+      python: 2.7
+      dist: xenial
+      sudo: required
+      env: PYTHON=python2.7
     #      - os: linux
     #        travis does not support python 3.3 anymore
     #        python: 3.3
