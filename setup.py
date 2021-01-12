@@ -16,12 +16,12 @@ setuptools.setup(
     keywords=['cryptography', 'symmetric', 'asymmetric', 'high', 'level', 'api', 'easy'],
     long_description=long_description,
     long_description_content_type='text/markdown',
-    pyton_requires='>=3.3',
+    pyton_requires='>=2.7',
     install_requires=[
         'pycryptodomex',
     ],
     classifiers=[
-        # command_runner is mature
+        # cryptidy is mature
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Topic :: Software Development",

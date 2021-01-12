@@ -24,7 +24,7 @@ It's main features are:
 
 # Setup
 
-cryptidy requires Python 3.4+
+cryptidy requires Python 2.7+
 
 `pip install cryptidy`
 
