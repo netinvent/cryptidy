@@ -74,7 +74,7 @@ def test_sym_selftest():
         key = symmetric_encryption.generate_key(key_size)
         print('\nKey is %s bytes long\n' % key_size)
 
-        assert len(key) == key_size, 'Encryption key should be 32 bytes long.'
+        assert len(key) == key_size, 'Encryption key should be 16 or 32 bytes long.'
 
         msg = ['This list shall be encrypted', 'This string in list will be encrypted']
         print(msg)
