@@ -153,6 +153,7 @@ def rsa_decrypt_message(msg, private_key):
     enc_session_key_size = int(private_key.size_in_bits() / 8)
 
     cipher_rsa = PKCS1_OAEP.new(key=private_key, hashAlgo=HASH_ALGO)
+    private_key = None
     enc_session_key, aes_encrypted_msg = \
         (msg[0:enc_session_key_size], msg[enc_session_key_size:])
     try:
