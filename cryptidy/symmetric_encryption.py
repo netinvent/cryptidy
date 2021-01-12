@@ -27,12 +27,12 @@ __build__ = '2021011201'
 
 import sys
 from logging import getLogger
+import pickle
 from base64 import b64encode, b64decode
 from binascii import Error as binascii_Error
 from datetime import datetime
 if sys.version_info[0] < 3 or sys.version_info[1] < 4:
     import time
-import pickle
 
 # Try to import as absolute when used as module, import as relative for autotests
 try:
@@ -41,7 +41,7 @@ except ImportError:
     from .padding import pad, unpad
 # noqaF401: generate_key is not used here, but should be available from the pacakge, disabling flake8 check
 try:
-    # pylint: disable=W0703,broad-except
+    # pylint: disable=W0611,unused-import
     from cryptidy.aes_encryption import aes_encrypt, aes_decrypt, generate_key  # noqa: F401
 except ImportError:
     from .aes_encryption import aes_encrypt, aes_decrypt, generate_key  # noqa: F401
@@ -105,7 +105,7 @@ def aes_encrypt_message(msg, aes_key):
                 raise ValueError('Invalid type of data given for AES encryption.')
 
         if sys.version_info[0] < 3 or sys.version_info[1] < 4:
-            timestamp = pad(str(time.time())).encode('utf-8')
+            timestamp = pad(str(time.mktime(datetime.now().timetuple()))).encode('utf-8')
         else:
             timestamp = pad(str(datetime.now().timestamp())).encode('utf-8')
         return nonce + tag + timestamp + ciphertext
@@ -146,8 +146,9 @@ def aes_decrypt_message(msg, aes_key):
 
     # try:  # COMPAT-0.9
     source_timestamp = float(unpad(timestamp.decode('utf-8')))
+    # Python < 3.4 does not have timestamp() attribute
     if sys.version_info[0] < 3 or sys.version_info[1] < 4:
-        timestamp_now = time.time()
+        timestamp_now = time.mktime(datetime.now().timetuple())
     else:
         timestamp_now = datetime.now().timestamp()
     if source_timestamp > timestamp_now:
