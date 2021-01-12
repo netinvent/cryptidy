@@ -43,9 +43,11 @@ try:
     from typing import Any, Tuple, Union
 except ImportError:
     pass
-# Python 2.7 fix
+# Python 2 fix where RSA keys are 'unicode' type, which does not exist in Python 3 anymore
+# Python 2 has a class 'basestring' which includes all string types
 if sys.version_info[0] < 3:
-    string_type = basestring
+    # pylint: disable=E0602,undefined-variable
+    string_type = basestring  # noqa: F821
 else:
     string_type = str
 
