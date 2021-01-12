@@ -43,13 +43,6 @@ try:
     from typing import Any, Tuple, Union
 except ImportError:
     pass
-# Python 2 fix where RSA keys are 'unicode' type, which does not exist in Python 3 anymore
-# Python 2 has a class 'basestring' which includes all string types
-if sys.version_info[0] < 3:
-    # pylint: disable=E0602,undefined-variable
-    string_type = basestring  # noqa: F821
-else:
-    string_type = str
 
 logger = getLogger(__name__)
 
@@ -69,32 +62,25 @@ def generate_keys(length=2048):
     return private_key.export_key().decode(), public_key.export_key().decode()
 
 
-def verify_private_key(private_key):
-    # type: (str) -> None
+def verify_key(key, key_type):
+    # type: (str, str) -> None
     """
     Simple key type verification to make decryption debugging easier
     """
-    if private_key is None:
-        raise TypeError('No private key provided.')
+    if key is None:
+        raise TypeError('No {} key provided.'.format(key_type))
 
-    if not isinstance(private_key, string_type):
-        raise TypeError('Wrong private key provided. PEM encoded key should be passed, not bytes.')
-    if '-----BEGIN RSA PRIVATE KEY-----\n' not in private_key:
-        raise TypeError('Wrong private key provided. Does not look like a PEM encoded key.')
-
-
-def verify_public_key(public_key):
-    # type: (str) -> None
-    """
-    Simple key type verification to make decryption debugging easier
-    """
-    if public_key is None:
-        raise TypeError('No private key provided.')
-
-    if not isinstance(public_key, string_type):
-        raise TypeError('Wrong private key provided. PEM encoded key should be passed, not bytes.')
-    if '-----BEGIN PUBLIC KEY-----\n' not in public_key:
-        raise TypeError('Wrong private key provided. Does not look like a PEM encoded key.')
+    # Python 2 fix where RSA keys are 'unicode' type, which does not exist in Python 3 anymore
+    # Python 2 has a class 'basestring' which includes all string types
+    if sys.version_info[0] < 3:
+        # pylint: disable=E0602,undefined-variable
+        string_type = basestring  # noqa: F821
+    else:
+        string_type = str
+    if not isinstance(key, string_type):
+        raise TypeError('Wrong {} key provided. PEM encoded key should be passed, not bytes.'.format(key_type))
+    if '-----BEGIN {} KEY-----\n'.format(key_type) not in key:
+        raise TypeError('Wrong {} key provided. Does not look like a PEM encoded key.'.format(key_type))
 
 
 def encrypt_message(msg, public_key):
@@ -106,7 +92,7 @@ def encrypt_message(msg, public_key):
     :param public_key: rsa public key
     :return: (bytes) base64 encoded aes encrypted message
     """
-    verify_public_key(public_key)
+    verify_key(public_key, 'PUBLIC')
     return b64encode(rsa_encrypt_message(msg, public_key))
 
 
@@ -145,7 +131,7 @@ def decrypt_message(msg, private_key):
     :param private_key: rsa private key
     :return: (bytes): rsa decrypted data
     """
-    verify_private_key(private_key)
+    verify_key(private_key, 'RSA PRIVATE')
     try:
         decoded_msg = b64decode(msg)
     except (TypeError, binascii_Error):
