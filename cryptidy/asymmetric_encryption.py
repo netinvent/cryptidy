@@ -23,6 +23,7 @@ __version__ = '1.0.4'
 __build__ = '2021011101'
 
 
+import sys
 from logging import getLogger
 from base64 import b64encode, b64decode
 from binascii import Error as binascii_Error
@@ -42,6 +43,11 @@ try:
     from typing import Any, Tuple, Union
 except ImportError:
     pass
+# Python 2.7 fix
+if sys.version_info[0] < 3:
+    string_type = basestring
+else:
+    string_type = str
 
 logger = getLogger(__name__)
 
@@ -69,7 +75,7 @@ def verify_private_key(private_key):
     if private_key is None:
         raise TypeError('No private key provided.')
 
-    if not isinstance(private_key, str):
+    if not isinstance(private_key, string_type):
         raise TypeError('Wrong private key provided. PEM encoded key should be passed, not bytes.')
     if '-----BEGIN RSA PRIVATE KEY-----\n' not in private_key:
         raise TypeError('Wrong private key provided. Does not look like a PEM encoded key.')
@@ -83,7 +89,7 @@ def verify_public_key(public_key):
     if public_key is None:
         raise TypeError('No private key provided.')
 
-    if not isinstance(public_key, str):
+    if not isinstance(public_key, string_type):
         raise TypeError('Wrong private key provided. PEM encoded key should be passed, not bytes.')
     if '-----BEGIN PUBLIC KEY-----\n' not in public_key:
         raise TypeError('Wrong private key provided. Does not look like a PEM encoded key.')
