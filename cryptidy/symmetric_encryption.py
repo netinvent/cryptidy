@@ -146,7 +146,11 @@ def aes_decrypt_message(msg, aes_key):
 
     # try:  # COMPAT-0.9
     source_timestamp = float(unpad(timestamp.decode('utf-8')))
-    if source_timestamp > datetime.now().timestamp():
+    if sys.version_info[0] < 3 or sys.version_info[1] < 4:
+        timestamp_now = time.time()
+    else:
+        timestamp_now = datetime.now().timestamp()
+    if source_timestamp > timestamp_now:
         raise ValueError('Timestamp is in future')
     source_timestamp = datetime.fromtimestamp(source_timestamp)
     # except:  # COMPAT-0.9
