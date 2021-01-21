@@ -169,7 +169,7 @@ def aes_decrypt_message(msg, aes_key):
         # May happen on unpickled encrypted data when pickling failed on encryption and fallback was used
         except (pickle.UnpicklingError, TypeError, OverflowError, KeyError):
             pass
-        #
+        # Try to catch any other pickle exception not listed above
         except Exception as exc:  # pylint: disable=W0703,broad-except
             logger.error('cryptidy unpicke error: {0}. Is data pickled ?'.format(exc))
             logger.info('Trace:', exc_info=True)
