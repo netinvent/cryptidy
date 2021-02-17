@@ -39,10 +39,6 @@ try:
 except ImportError:
     from .symmetric_encryption import aes_encrypt_message, aes_decrypt_message
 # Python 2.7 compat fixes (missing typing and FileNotFoundError)
-try:
-    from typing import Any, Tuple, Union
-except ImportError:
-    pass
 
 logger = getLogger(__name__)
 
