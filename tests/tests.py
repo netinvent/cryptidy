@@ -29,7 +29,7 @@ from cryptidy import asymmetric_encryption
 
 
 def test_pad_selftest():
-    print('Example code for %s, %s' % (__intname__, __build__))
+    print('Testing padding functions')
     from datetime import datetime
     msg = '%s' % datetime.now()
     padded_msg = padding.pad(msg)
@@ -46,7 +46,6 @@ def test_aes_selftest():
     """
     Self test function
     """
-    print('Example code for %s, %s' % (__intname__, __build__))
     print('Example key generation and data encryption using AES-256-EAX')
     for key_size in [16, 32]:
         key = aes_encryption.generate_key(key_size)
@@ -68,7 +67,6 @@ def test_sym_selftest():
     """
     Self test function
     """
-    print('Example code for %s, %s' % (__intname__, __build__))
     print('Example key generation and data encryption using AES-256-EAX')
     for key_size in [16, 32]:
         key = symmetric_encryption.generate_key(key_size)
@@ -109,7 +107,6 @@ def test_asym_selftest():
     """
     Self test function
     """
-    print('Example code for %s, %s' % (__intname__, __build__))
     print('Example RSA private and public key generation and data encryption using AES-256-EAX')
     for key_size in [1024, 2048, 4096]:
         print('\nTesting with %s bits RSA key.\n' % key_size)
@@ -145,3 +142,11 @@ def test_asym_selftest():
         assert data == dec_data, 'Original data and decrypted one should be the same.'
 
         print('Test done with %s bits RSA key.' % key_size)
+
+
+if __name__ == '__main__':
+    print('Example code for %s, %s' % (__intname__, __build__))
+    test_pad_selftest()
+    test_aes_selftest()
+    test_sym_selftest()
+    test_asym_selftest()
