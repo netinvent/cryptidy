@@ -162,8 +162,7 @@ def aes_decrypt_message(msg, aes_key):
         if source_timestamp > timestamp_now:
             raise EnvironmentError('Encrypted data timestamp is in future')
         source_timestamp = datetime.fromtimestamp(source_timestamp)
-    except (
-    TypeError, AttributeError, UnicodeDecodeError, ValueError) as e:  # pylint: disable=W0703,broad-except # COMPAT-0.9
+    except (TypeError, AttributeError, UnicodeDecodeError, ValueError):  # COMPAT-0.9
         source_timestamp = None  # COMPAT-0.9
         ciphertext = msg[32:]  # COMPAT-0.9
 
