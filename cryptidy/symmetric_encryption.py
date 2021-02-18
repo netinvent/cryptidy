@@ -25,14 +25,16 @@ __build__ = '2021011201'
 # Earlier versions of cryptidy <1.0.0 require to uncomment # COMPAT-0.9 comments
 
 
-import sys
-from logging import getLogger
 import pickle
+import sys
 from base64 import b64encode, b64decode
 from binascii import Error as binascii_Error
 from datetime import datetime
-if sys.version_info[0] < 3 or sys.version_info[1] < 4:
+from logging import getLogger
+
+if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 4):
     import time
+
 
     def timestamp_get():
         """
@@ -134,8 +136,10 @@ def decrypt_message(msg, aes_key):
         except (TypeError, binascii_Error):
             raise TypeError('decrypt_message accepts b64 encoded byte objects')
         return aes_decrypt_message(decoded_msg, aes_key)
-    except Exception:  # pylint: disable=W0703,broad-except  # COMPAT-0.9
+    #  Earlier cryptidy did not use b64 encoding, hence we need to be able to decode those elder messages # COMPAT-0.9
+    except ValueError:  # pylint: disable=W0703,broad-except  # COMPAT-0.9
         return aes_decrypt_message(msg, aes_key)  # COMPAT-0.9
+
 
 
 def aes_decrypt_message(msg, aes_key):
@@ -156,9 +160,10 @@ def aes_decrypt_message(msg, aes_key):
         source_timestamp = float(unpad(timestamp.decode('utf-8')))
         timestamp_now = timestamp_get()
         if source_timestamp > timestamp_now:
-            raise ValueError('Timestamp is in future')
+            raise EnvironmentError('Encrypted data timestamp is in future')
         source_timestamp = datetime.fromtimestamp(source_timestamp)
-    except Exception:  # pylint: disable=W0703,broad-except # COMPAT-0.9
+    except (
+    TypeError, AttributeError, UnicodeDecodeError, ValueError) as e:  # pylint: disable=W0703,broad-except # COMPAT-0.9
         source_timestamp = None  # COMPAT-0.9
         ciphertext = msg[32:]  # COMPAT-0.9
 
