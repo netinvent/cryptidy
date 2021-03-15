@@ -21,7 +21,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest
         if (Test-Path "cryptidy/requirements.txt") { pip install -r cryptidy/requirements.txt }
         # Add additional windows requirements
         if (Test-Path "cryptidy/requirements-win.txt") { pip install -r cryptidy/requirements-win.txt }
