@@ -20,7 +20,7 @@ __author__ = 'Orsiris de Jong'
 __copyright__ = 'Copyright (C) 2018-2021 Orsiris de Jong'
 __licence__ = 'BSD 3 Clause'
 __version__ = '1.0.4'
-__build__ = '2021011201'
+__build__ = '2021031501'
 
 # Earlier versions of cryptidy <1.0.0 require to uncomment # COMPAT-0.9 comments
 
@@ -160,7 +160,10 @@ def aes_decrypt_message(msg, aes_key):
         source_timestamp = float(unpad(timestamp.decode('utf-8')))
         timestamp_now = timestamp_get()
         if source_timestamp > timestamp_now:
-            raise EnvironmentError('Encrypted data timestamp is in future')
+            print('*** WARNING *** Encrypted data timestamp is in future\n')
+        if source_timestamp < timestamp_now - 86400 * 365:
+            print('*** WARNING *** Encrypted data timestamp is older than one year. If the source'
+                  'computer clock is not set, it may encounter various certificate error issues.\n')
         source_timestamp = datetime.fromtimestamp(source_timestamp)
     except (TypeError, AttributeError, UnicodeDecodeError, ValueError):  # COMPAT-0.9
         source_timestamp = None  # COMPAT-0.9
