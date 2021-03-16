@@ -15,7 +15,7 @@ It is based on AES encryption (265 or 128 bytes).
 It's main features are:
  - Encrypt any pickable Python object / variables
  - Add an UTC timestamp to the encrypted message
- - Verify that decrypted messages timestamps aren't in the future
+ - Verify that decrypted messages timestamps aren't in the future or too old (for bad RTC clock diags)
  - Allow symmetric encryption (AES)
      - 128, 192 or 256 bits encryption
  - Allow asymmetric encryption (RSA + AES)
@@ -48,6 +48,7 @@ timestamp, original_object = symmetric_encryption.decrypt_message(encrypted, key
 from cryptidy import asymmetric_encryption
 
 priv_key, pub_key = asymmetric_encryption.generate_keys(2048)  # 2048 bits RSA key
+
 some_python_object = ['foo', 'bar']
 encrypted = asymmetric_encryption.encrypt_message(some_python_object, pub_key)
 timestamp, original_object = asymmetric_encryption.decrypt_message(encrypted, priv_key)
