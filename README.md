@@ -5,7 +5,8 @@
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/netinvent/cryptidy.svg)](http://isitmaintained.com/project/netinvent/Cryptidy "Percentage of issues still open")
 [![Maintainability](https://api.codeclimate.com/v1/badges/be5d6edea1288951dc07/maintainability)](https://codeclimate.com/github/netinvent/cryptidy/maintainability)
 [![codecov](https://codecov.io/gh/netinvent/cryptidy/branch/master/graph/badge.svg?token=E5D9oVnqj7)](https://codecov.io/gh/netinvent/cryptidy)
-[![Build Status](https://travis-ci.com/netinvent/cryptidy.svg?branch=master)](https://travis-ci.com/netinvent/cryptidy)
+[![linux-tests](https://github.com/netinvent/cryptidy/actions/workflows/linux.yaml/badge.svg)](https://github.com/netinvent/cryptidy/actions/workflows/linux.yaml)
+[![windows-tests](https://github.com/netinvent/cryptidy/actions/workflows/windows.yaml/badge.svg)](https://github.com/netinvent/cryptidy/actions/workflows/windows.yaml)
 [![GitHub Release](https://img.shields.io/github/release/netinvent/cryptidy.svg?label=Latest)](https://github.com/netinvent/cryptidy/releases/latest)
 
 This library has been written to make encryption / decryption of any python object as simple as possible.
