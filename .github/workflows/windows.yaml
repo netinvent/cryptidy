@@ -29,12 +29,6 @@ jobs:
         if (Test-Path "cryptidy/requirements.txt") { pip install -r cryptidy/requirements.txt }
         # Add additional windows requirements
         if (Test-Path "cryptidy/requirements-win.txt") { pip install -r cryptidy/requirements-win.txt }
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        python -m flake8 --count --select=E9,F63,F7,F82 --show-source --statistics cryptidy
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        python -m flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics cryptidy
     - name: Execute tests and generate coverage report
       run: |
         pip install pytest coverage
