@@ -13,12 +13,12 @@ Versioning semantics:
 
 """
 
-__intname__ = 'cryptidy.aes_encryption'
-__author__ = 'Orsiris de Jong'
-__copyright__ = 'Copyright (C) 2018-2021 Orsiris de Jong'
-__licence__ = 'BSD 3 Clause'
-__version__ = '1.0.1'
-__build__ = '2021011101'
+__intname__ = "cryptidy.aes_encryption"
+__author__ = "Orsiris de Jong"
+__copyright__ = "Copyright (C) 2018-2021 Orsiris de Jong"
+__licence__ = "BSD 3 Clause"
+__version__ = "1.0.1"
+__build__ = "2021011101"
 
 from logging import getLogger
 from typing import Union, Tuple
@@ -41,7 +41,7 @@ def generate_key(size=32):
         aes_key = get_random_bytes(size)
         return aes_key
     except Exception as exc:
-        raise ValueError('Cannot generate AES key: %s' % exc)
+        raise ValueError("Cannot generate AES key: %s" % exc)
 
 
 def aes_encrypt(msg, aes_key):
@@ -60,12 +60,12 @@ def aes_encrypt(msg, aes_key):
             # wipe key from memory as soon as it's been used
             aes_key = None
         else:
-            raise ValueError('No AES key provided.')
+            raise ValueError("No AES key provided.")
 
         ciphertext, tag = cipher.encrypt_and_digest(msg)
         return cipher.nonce, tag, ciphertext
     except Exception as exc:
-        raise ValueError('Cannot encode AES data: %s' % exc)
+        raise ValueError("Cannot encode AES data: %s" % exc)
 
 
 def aes_decrypt(aes_key, nonce, tag, ciphertext):
@@ -86,9 +86,9 @@ def aes_decrypt(aes_key, nonce, tag, ciphertext):
             # wipe key from memory as soon as it's been used
             aes_key = None
         else:
-            raise ValueError('No aes key provided.')
+            raise ValueError("No aes key provided.")
 
         data = cipher.decrypt_and_verify(ciphertext, tag)
         return data
     except Exception as exc:
-        raise ValueError('Cannot read AES data: %s' % exc)
+        raise ValueError("Cannot read AES data: %s" % exc)

@@ -15,12 +15,12 @@ Versioning semantics:
 
 """
 
-__intname__ = 'cryptidy.symmetric_encryption'
-__author__ = 'Orsiris de Jong'
-__copyright__ = 'Copyright (C) 2018-2021 Orsiris de Jong'
-__licence__ = 'BSD 3 Clause'
-__version__ = '1.0.5'
-__build__ = '2021050601'
+__intname__ = "cryptidy.symmetric_encryption"
+__author__ = "Orsiris de Jong"
+__copyright__ = "Copyright (C) 2018-2021 Orsiris de Jong"
+__licence__ = "BSD 3 Clause"
+__version__ = "1.0.5"
+__build__ = "2021050601"
 
 # Earlier versions of cryptidy <1.0.0 require to uncomment # COMPAT-0.9 comments
 
@@ -35,18 +35,21 @@ from logging import getLogger
 if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 4):
     import time
 
-
     def timestamp_get():
         """
         Get UTC timestamp
         """
         return time.mktime(datetime.utcnow().timetuple())
+
+
 else:
+
     def timestamp_get():
         """
         Get UTC timestamp
         """
         return datetime.utcnow().timestamp()
+
 
 # Try to import as absolute when used as module, import as relative for autotests
 try:
@@ -56,7 +59,11 @@ except ImportError:
 # noqaF401: generate_key is not used here, but should be available from the pacakge, disabling flake8 check
 try:
     # pylint: disable=W0611,unused-import
-    from cryptidy.aes_encryption import aes_encrypt, aes_decrypt, generate_key  # noqa: F401
+    from cryptidy.aes_encryption import (
+        aes_encrypt,
+        aes_decrypt,
+        generate_key,
+    )  # noqa: F401
 except ImportError:
     from .aes_encryption import aes_encrypt, aes_decrypt, generate_key  # noqa: F401
 # Python 2.7 compat fixes (missing typing and FileNotFoundError)
@@ -74,15 +81,19 @@ def verify_key(aes_key):
     """
 
     if not len(aes_key) in [16, 24, 32]:
-        raise TypeError('Wrong encryption key provided. Allowed key sizes are 16, 24 or 32 bytes.')
+        raise TypeError(
+            "Wrong encryption key provided. Allowed key sizes are 16, 24 or 32 bytes."
+        )
     try:
-        if 'BEGIN' in aes_key.decode('utf-8', errors='backslashreplace'):
-            raise TypeError('Wrong encryption key provided. This looks like an RSA key.')
+        if "BEGIN" in aes_key.decode("utf-8", errors="backslashreplace"):
+            raise TypeError(
+                "Wrong encryption key provided. This looks like an RSA key."
+            )
     except (UnicodeDecodeError, TypeError):
         # On earlier Python versions, keys cannot be decoded
         pass
     if not isinstance(aes_key, bytes):
-        raise TypeError('Wrong encryption key provided. Key type should be binary.')
+        raise TypeError("Wrong encryption key provided. Key type should be binary.")
 
 
 def encrypt_message(msg, aes_key):
@@ -114,14 +125,14 @@ def aes_encrypt_message(msg, aes_key):
             if isinstance(msg, bytes):
                 nonce, tag, ciphertext = aes_encrypt(msg, aes_key)
             elif isinstance(msg, str):
-                nonce, tag, ciphertext = aes_encrypt(msg.encode('utf-8'), aes_key)
+                nonce, tag, ciphertext = aes_encrypt(msg.encode("utf-8"), aes_key)
             else:
-                raise ValueError('Invalid type of data given for AES encryption.')
+                raise ValueError("Invalid type of data given for AES encryption.")
 
-        timestamp = pad(str(timestamp_get())).encode('utf-8')
+        timestamp = pad(str(timestamp_get())).encode("utf-8")
         return nonce + tag + timestamp + ciphertext
     except Exception as exc:
-        raise ValueError('Cannot AES encrypt data: %s.' % exc)
+        raise ValueError("Cannot AES encrypt data: %s." % exc)
 
 
 def decrypt_message(msg, aes_key):
@@ -134,12 +145,11 @@ def decrypt_message(msg, aes_key):
         try:
             decoded_msg = b64decode(msg)
         except (TypeError, binascii_Error):
-            raise TypeError('decrypt_message accepts b64 encoded byte objects')
+            raise TypeError("decrypt_message accepts b64 encoded byte objects")
         return aes_decrypt_message(decoded_msg, aes_key)
     #  Earlier cryptidy did not use b64 encoding, hence we need to be able to decode those elder messages # COMPAT-0.9
     except ValueError:  # pylint: disable=W0703,broad-except  # COMPAT-0.9
         return aes_decrypt_message(msg, aes_key)  # COMPAT-0.9
-
 
 
 def aes_decrypt_message(msg, aes_key):
@@ -151,21 +161,26 @@ def aes_decrypt_message(msg, aes_key):
     :param aes_key: aes encryption key
     :return: original data
     """
-    nonce, tag, timestamp, ciphertext = (msg[0:16],
-                                         msg[16:32],
-                                         msg[32:64],
-                                         msg[64:])
+    nonce, tag, timestamp, ciphertext = (msg[0:16], msg[16:32], msg[32:64], msg[64:])
 
     try:  # COMPAT-0.9
-        source_timestamp = float(unpad(timestamp.decode('utf-8')))
+        source_timestamp = float(unpad(timestamp.decode("utf-8")))
         timestamp_now = timestamp_get()
         if source_timestamp > timestamp_now:
-            print('*** WARNING *** Encrypted data timestamp is in future\n')
+            print("*** WARNING *** Encrypted data timestamp is in future\n")
         if source_timestamp < timestamp_now - 86400 * 365:
-            print('*** WARNING *** Encrypted data timestamp is older than one year. If the source'
-                  'computer clock is not set, it may encounter various certificate error issues.\n')
+            print(
+                "*** WARNING *** Encrypted data timestamp is older than one year. If the source"
+                "computer clock is not set, it may encounter various certificate error issues.\n"
+            )
         source_timestamp = datetime.fromtimestamp(source_timestamp)
-    except (TypeError, AttributeError, UnicodeDecodeError, ValueError, IndexError):  # COMPAT-0.9
+    except (
+        TypeError,
+        AttributeError,
+        UnicodeDecodeError,
+        ValueError,
+        IndexError,
+    ):  # COMPAT-0.9
         source_timestamp = None  # COMPAT-0.9
         ciphertext = msg[32:]  # COMPAT-0.9
 
@@ -178,8 +193,8 @@ def aes_decrypt_message(msg, aes_key):
             pass
         # Try to catch any other pickle exception not listed above
         except Exception as exc:  # pylint: disable=W0703,broad-except
-            logger.error('cryptidy unpickle error: {0}. Is data pickled ?'.format(exc))
-            logger.info('Trace:', exc_info=True)
+            logger.error("cryptidy unpickle error: {0}. Is data pickled ?".format(exc))
+            logger.info("Trace:", exc_info=True)
         return source_timestamp, data
     except Exception as exc:  # pylint: disable=W0703,broad-except
-        raise ValueError('Cannot read AES data: %s' % exc)
+        raise ValueError("Cannot read AES data: %s" % exc)

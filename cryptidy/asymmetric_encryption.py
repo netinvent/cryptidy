@@ -15,12 +15,12 @@ Versioning semantics:
 
 """
 
-__intname__ = 'cryptidy.asymmetric_encryption'
-__author__ = 'Orsiris de Jong'
-__copyright__ = 'Copyright (C) 2020-2021 Orsiris de Jong'
-__licence__ = 'BSD 3 Clause'
-__version__ = '1.0.4'
-__build__ = '202101201'
+__intname__ = "cryptidy.asymmetric_encryption"
+__author__ = "Orsiris de Jong"
+__copyright__ = "Copyright (C) 2020-2021 Orsiris de Jong"
+__licence__ = "BSD 3 Clause"
+__version__ = "1.0.4"
+__build__ = "202101201"
 
 
 import sys
@@ -31,8 +31,10 @@ from datetime import datetime
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Random import get_random_bytes
 from Cryptodome.Cipher import PKCS1_OAEP
+
 # Make sure we use a solid Hash algorithm, industry standard is SHA256, don't use SHA3 yet as of Nov 2020
 from Cryptodome.Hash import SHA384 as HASH_ALGO
+
 # Try to import as absolute when used as module, import as relative for autotests
 try:
     from cryptidy.symmetric_encryption import aes_encrypt_message, aes_decrypt_message
@@ -56,7 +58,7 @@ def generate_keys(length=2048):
     :return: (tuple) private_key, public_key as PEM format
     """
     if length < 1024:
-        raise ValueError('RSA key length must be >= 1024')
+        raise ValueError("RSA key length must be >= 1024")
     private_key = RSA.generate(length)
     public_key = private_key.publickey()
     return private_key.export_key().decode(), public_key.export_key().decode()
@@ -68,7 +70,7 @@ def verify_key(key, key_type):
     Simple key type verification to make decryption debugging easier
     """
     if key is None:
-        raise TypeError('No {} key provided.'.format(key_type))
+        raise TypeError("No {} key provided.".format(key_type))
 
     # Python 2 fix where RSA keys are 'unicode' type, which does not exist in Python 3 anymore
     # Python 2 has a class 'basestring' which includes all string types
@@ -78,9 +80,17 @@ def verify_key(key, key_type):
     else:
         string_type = str
     if not isinstance(key, string_type):
-        raise TypeError('Wrong {} key provided. PEM encoded key should be passed, not bytes.'.format(key_type))
-    if '-----BEGIN {} KEY-----\n'.format(key_type) not in key:
-        raise TypeError('Wrong {} key provided. Does not look like a PEM encoded key.'.format(key_type))
+        raise TypeError(
+            "Wrong {} key provided. PEM encoded key should be passed, not bytes.".format(
+                key_type
+            )
+        )
+    if "-----BEGIN {} KEY-----\n".format(key_type) not in key:
+        raise TypeError(
+            "Wrong {} key provided. Does not look like a PEM encoded key.".format(
+                key_type
+            )
+        )
 
 
 def encrypt_message(msg, public_key):
@@ -92,7 +102,7 @@ def encrypt_message(msg, public_key):
     :param public_key: rsa public key
     :return: (bytes) base64 encoded aes encrypted message
     """
-    verify_key(public_key, 'PUBLIC')
+    verify_key(public_key, "PUBLIC")
     return b64encode(rsa_encrypt_message(msg, public_key))
 
 
@@ -131,11 +141,11 @@ def decrypt_message(msg, private_key):
     :param private_key: rsa private key
     :return: (bytes): rsa decrypted data
     """
-    verify_key(private_key, 'RSA PRIVATE')
+    verify_key(private_key, "RSA PRIVATE")
     try:
         decoded_msg = b64decode(msg)
     except (TypeError, binascii_Error):
-        raise TypeError('decrypt_message accepts b64 encoded byte objects')
+        raise TypeError("decrypt_message accepts b64 encoded byte objects")
 
     return rsa_decrypt_message(decoded_msg, private_key)
 
@@ -154,13 +164,15 @@ def rsa_decrypt_message(msg, private_key):
 
     cipher_rsa = PKCS1_OAEP.new(key=private_key, hashAlgo=HASH_ALGO)
     private_key = None
-    enc_session_key, aes_encrypted_msg = \
-        (msg[0:enc_session_key_size], msg[enc_session_key_size:])
+    enc_session_key, aes_encrypted_msg = (
+        msg[0:enc_session_key_size],
+        msg[enc_session_key_size:],
+    )
     try:
         session_key = cipher_rsa.decrypt(enc_session_key)
     except TypeError:
-        raise TypeError('You need a private key to decrypt data.')
+        raise TypeError("You need a private key to decrypt data.")
     except ValueError:
-        raise ValueError('RSA Integrity check failed, cannot decrypt data.')
+        raise ValueError("RSA Integrity check failed, cannot decrypt data.")
 
     return aes_decrypt_message(aes_encrypted_msg, session_key)

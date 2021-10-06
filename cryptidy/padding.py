@@ -13,12 +13,12 @@ Versioning semantics:
 
 """
 
-__intname__ = 'cryptidy.padding'
-__author__ = 'Orsiris de Jong'
-__copyright__ = 'Copyright (C) 2018-2021 Orsiris de Jong'
-__licence__ = 'BSD 3 Clause'
-__version__ = '0.1.2'
-__build__ = '2021011101'
+__intname__ = "cryptidy.padding"
+__author__ = "Orsiris de Jong"
+__copyright__ = "Copyright (C) 2018-2021 Orsiris de Jong"
+__licence__ = "BSD 3 Clause"
+__version__ = "0.1.2"
+__build__ = "2021011101"
 
 
 def pad(string, pad_len=32):
@@ -26,7 +26,9 @@ def pad(string, pad_len=32):
     """
     Simple function that allows to lengthen a string to a defined length
     """
-    return string + (pad_len - len(string) % pad_len) * chr(pad_len - len(string) % pad_len)
+    return string + (pad_len - len(string) % pad_len) * chr(
+        pad_len - len(string) % pad_len
+    )
 
 
 def unpad(string):
@@ -34,7 +36,8 @@ def unpad(string):
     """
     Simple function that exctracts the initial string from a padded string
     """
-    return string[0:-ord(string[-1])]
+    return string[0 : -ord(string[-1])]
+
 
 # lambda function version
 # pad_len = 32
