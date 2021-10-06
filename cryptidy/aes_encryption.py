@@ -17,13 +17,19 @@ __intname__ = "cryptidy.aes_encryption"
 __author__ = "Orsiris de Jong"
 __copyright__ = "Copyright (C) 2018-2021 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
-__version__ = "1.0.1"
-__build__ = "2021011101"
+__version__ = "1.0.2"
+__build__ = "2021100601"
 
 from logging import getLogger
-from typing import Union, Tuple
 from Cryptodome.Cipher import AES  # pylint: disable=I0021,import-error
 from Cryptodome.Random import get_random_bytes  # pylint: disable=I0021,import-error
+
+# Python 2.7 compat fixes (missing typing and FileNotFoundError)
+try:
+    from typing import Union, Tuple
+except ImportError:
+    pass
+
 
 logger = getLogger(__name__)
 
