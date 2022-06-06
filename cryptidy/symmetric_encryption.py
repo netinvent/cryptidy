@@ -41,7 +41,6 @@ if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] 
         """
         return time.mktime(datetime.utcnow().timetuple())
 
-
 else:
 
     def timestamp_get():
