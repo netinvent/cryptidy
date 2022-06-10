@@ -19,9 +19,8 @@ __intname__ = "cryptidy.asymmetric_encryption"
 __author__ = "Orsiris de Jong"
 __copyright__ = "Copyright (C) 2020-2021 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
-__version__ = "1.0.4"
-__build__ = "202101201"
-
+__version__ = "1.1.0"
+__build__ = "2022061001"
 
 import sys
 from logging import getLogger
@@ -40,6 +39,11 @@ try:
     from cryptidy.symmetric_encryption import aes_encrypt_message, aes_decrypt_message
 except ImportError:
     from .symmetric_encryption import aes_encrypt_message, aes_decrypt_message
+# Try to import as absolute when used as module, import as relative for autotests
+try:
+    from cryptidy.aes_encryption import generate_random_string
+except ImportError:
+    from .aes_encryption import generate_random_string
 # Python 2.7 compat fixes (missing typing and FileNotFoundError)
 try:
     from typing import Any, Tuple, Union
@@ -93,6 +97,17 @@ def verify_key(key, key_type):
         )
 
 
+def encrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
+    # type: (Any, bytes, int, int) -> bytes
+    """
+    Simple wrapper for encrypt_message that adds random header and footer chars
+    This function solely exists for compat reasons
+    """
+    header = generate_random_string(random_header_len).encode('utf-8')
+    footer = generate_random_string(random_footer_len).encode('utf-8')
+    return header + encrypt_message(msg, key) + footer
+
+
 def encrypt_message(msg, public_key):
     # type: (Any, str) -> bytes
     """
@@ -130,6 +145,18 @@ def rsa_encrypt_message(msg, public_key):
     # RSA encrypt the aes encryption key and use the original key to encrypt our message using AES
     enc_session_key = cipher_rsa.encrypt(session_key)
     return enc_session_key + aes_encrypt_message(msg, session_key)
+
+
+def decrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
+    # type: (Union[bytes, str], bytes, int, int) -> bytes
+    """
+    Simple wrapper for decrypt_message that adds random header and footer chars
+    This function solely exists for compat reasons
+    """
+    if random_footer_len > 0:
+        return decrypt_message(msg[random_header_len:][:-random_footer_len], key)
+    else:
+        return decrypt_message(msg[random_header_len:], key)
 
 
 def decrypt_message(msg, private_key):

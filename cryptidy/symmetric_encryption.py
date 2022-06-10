@@ -19,8 +19,8 @@ __intname__ = "cryptidy.symmetric_encryption"
 __author__ = "Orsiris de Jong"
 __copyright__ = "Copyright (C) 2018-2021 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
-__version__ = "1.0.5"
-__build__ = "2021050601"
+__version__ = "1.1.0"
+__build__ = "2022061001"
 
 # Earlier versions of cryptidy <1.0.0 require to uncomment # COMPAT-0.9 comments
 
@@ -35,11 +35,13 @@ from logging import getLogger
 if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 4):
     import time
 
+
     def timestamp_get():
         """
         Get UTC timestamp
         """
         return time.mktime(datetime.utcnow().timetuple())
+
 
 else:
 
@@ -48,7 +50,6 @@ else:
         Get UTC timestamp
         """
         return datetime.utcnow().timestamp()
-
 
 # Try to import as absolute when used as module, import as relative for autotests
 try:
@@ -62,15 +63,15 @@ try:
         aes_encrypt,
         aes_decrypt,
         generate_key,
+        generate_random_string,
     )  # noqa: F401
 except ImportError:
-    from .aes_encryption import aes_encrypt, aes_decrypt, generate_key  # noqa: F401
+    from .aes_encryption import aes_encrypt, aes_decrypt, generate_key, generate_random_string  # noqa: F401
 # Python 2.7 compat fixes (missing typing and FileNotFoundError)
 try:
     from typing import Any, Union, Tuple
 except ImportError:
     pass
-
 
 logger = getLogger(__name__)
 
@@ -95,6 +96,17 @@ def verify_key(aes_key):
         pass
     if not isinstance(aes_key, bytes):
         raise TypeError("Wrong encryption key provided. Key type should be binary.")
+
+
+def encrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
+    # type: (Any, bytes, int, int) -> bytes
+    """
+    Simple wrapper for encrypt_message that adds random header and footer chars
+    This function solely exists for compat reasons
+    """
+    header = generate_random_string(random_header_len).encode('utf-8')
+    footer = generate_random_string(random_footer_len).encode('utf-8')
+    return header + encrypt_message(msg, key) + footer
 
 
 def encrypt_message(msg, aes_key):
@@ -134,6 +146,18 @@ def aes_encrypt_message(msg, aes_key):
         return nonce + tag + timestamp + ciphertext
     except Exception as exc:
         raise ValueError("Cannot AES encrypt data: %s." % exc)
+
+
+def decrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
+    # type: (Union[bytes, str], bytes, int, int) -> bytes
+    """
+    Simple wrapper for decrypt_message that adds random header and footer chars
+    This function solely exists for compat reasons
+    """
+    if random_footer_len > 0:
+        return decrypt_message(msg[random_header_len:][:-random_footer_len], key)
+    else:
+        return decrypt_message(msg[random_header_len:], key)
 
 
 def decrypt_message(msg, aes_key):
@@ -176,11 +200,11 @@ def aes_decrypt_message(msg, aes_key):
             )
         source_timestamp = datetime.fromtimestamp(source_timestamp)
     except (
-        TypeError,
-        AttributeError,
-        UnicodeDecodeError,
-        ValueError,
-        IndexError,
+            TypeError,
+            AttributeError,
+            UnicodeDecodeError,
+            ValueError,
+            IndexError,
     ):  # COMPAT-0.9
         source_timestamp = None  # COMPAT-0.9
         ciphertext = msg[32:]  # COMPAT-0.9
