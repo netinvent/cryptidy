@@ -17,10 +17,12 @@ __intname__ = "cryptidy.aes_encryption"
 __author__ = "Orsiris de Jong"
 __copyright__ = "Copyright (C) 2018-2021 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
-__version__ = "1.0.2"
-__build__ = "2021100601"
+__version__ = "1.1.0"
+__build__ = "2022061001"
 
 from logging import getLogger
+import string
+import random
 from Cryptodome.Cipher import AES  # pylint: disable=I0021,import-error
 from Cryptodome.Random import get_random_bytes  # pylint: disable=I0021,import-error
 
@@ -29,7 +31,6 @@ try:
     from typing import Union, Tuple
 except ImportError:
     pass
-
 
 logger = getLogger(__name__)
 
@@ -98,3 +99,11 @@ def aes_decrypt(aes_key, nonce, tag, ciphertext):
         return data
     except Exception as exc:
         raise ValueError("Cannot read AES data: %s" % exc)
+
+
+def generate_random_string(size=8, chars=string.ascii_letters + string.digits):
+    # type: (int, list) -> str
+    """
+    Simple random base64 like string from ofunctions.random
+    """
+    return "".join(random.choice(chars) for _ in range(size))
