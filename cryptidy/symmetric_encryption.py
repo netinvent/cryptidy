@@ -35,13 +35,11 @@ from logging import getLogger
 if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 4):
     import time
 
-
     def timestamp_get():
         """
         Get UTC timestamp
         """
         return time.mktime(datetime.utcnow().timetuple())
-
 
 else:
 
@@ -50,6 +48,7 @@ else:
         Get UTC timestamp
         """
         return datetime.utcnow().timestamp()
+
 
 # Try to import as absolute when used as module, import as relative for autotests
 try:
@@ -66,7 +65,12 @@ try:
         generate_random_string,
     )  # noqa: F401
 except ImportError:
-    from .aes_encryption import aes_encrypt, aes_decrypt, generate_key, generate_random_string  # noqa: F401
+    from .aes_encryption import (
+        aes_encrypt,
+        aes_decrypt,
+        generate_key,
+        generate_random_string,
+    )  # noqa: F401
 # Python 2.7 compat fixes (missing typing and FileNotFoundError)
 try:
     from typing import Any, Union, Tuple
@@ -104,8 +108,8 @@ def encrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
     Simple wrapper for encrypt_message that adds random header and footer chars
     This function solely exists for compat reasons
     """
-    header = generate_random_string(random_header_len).encode('utf-8')
-    footer = generate_random_string(random_footer_len).encode('utf-8')
+    header = generate_random_string(random_header_len).encode("utf-8")
+    footer = generate_random_string(random_footer_len).encode("utf-8")
     return header + encrypt_message(msg, key) + footer
 
 
@@ -149,7 +153,7 @@ def aes_encrypt_message(msg, aes_key):
 
 
 def decrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
-    # type: (Union[bytes, str], bytes, int, int) -> bytes
+    # type: (Union[bytes, str], bytes, int, int) -> Tuple[datetime, Any]
     """
     Simple wrapper for decrypt_message that adds random header and footer chars
     This function solely exists for compat reasons
@@ -200,11 +204,11 @@ def aes_decrypt_message(msg, aes_key):
             )
         source_timestamp = datetime.fromtimestamp(source_timestamp)
     except (
-            TypeError,
-            AttributeError,
-            UnicodeDecodeError,
-            ValueError,
-            IndexError,
+        TypeError,
+        AttributeError,
+        UnicodeDecodeError,
+        ValueError,
+        IndexError,
     ):  # COMPAT-0.9
         source_timestamp = None  # COMPAT-0.9
         ciphertext = msg[32:]  # COMPAT-0.9
@@ -214,8 +218,15 @@ def aes_decrypt_message(msg, aes_key):
         try:
             data = pickle.loads(data)
         # May happen on unpickled encrypted data when pickling failed on encryption and fallback was used
+        # ModuleNotFoundError may happen if we unpickle a class which was not loaded
         except (pickle.UnpicklingError, TypeError, OverflowError, KeyError):
             pass
+        except ModuleNotFoundError as exc:
+            logger.error(
+                "Cannot unpickle an object. If you're decrypting a class, it needs to be loaded: {}".format(
+                    exc
+                )
+            )
         # Try to catch any other pickle exception not listed above
         except Exception as exc:  # pylint: disable=W0703,broad-except
             logger.error("cryptidy unpickle error: {0}. Is data pickled ?".format(exc))
