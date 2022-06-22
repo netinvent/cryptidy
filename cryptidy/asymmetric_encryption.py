@@ -98,13 +98,13 @@ def verify_key(key, key_type):
 
 
 def encrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
-    # type: (Any, bytes, int, int) -> bytes
+    # type: (Any, str, int, int) -> bytes
     """
     Simple wrapper for encrypt_message that adds random header and footer chars
     This function solely exists for compat reasons
     """
-    header = generate_random_string(random_header_len).encode('utf-8')
-    footer = generate_random_string(random_footer_len).encode('utf-8')
+    header = generate_random_string(random_header_len).encode("utf-8")
+    footer = generate_random_string(random_footer_len).encode("utf-8")
     return header + encrypt_message(msg, key) + footer
 
 
@@ -148,7 +148,7 @@ def rsa_encrypt_message(msg, public_key):
 
 
 def decrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
-    # type: (Union[bytes, str], bytes, int, int) -> bytes
+    # type: (Union[bytes, str], str, int, int) -> Tuple[datetime, Any]
     """
     Simple wrapper for decrypt_message that adds random header and footer chars
     This function solely exists for compat reasons
