@@ -97,14 +97,22 @@ def verify_key(key, key_type):
         )
 
 
-def encrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
-    # type: (Any, str, int, int) -> bytes
+def encrypt_message_hf(msg, key, header=b'', footer=b'', random_header_len=0, random_footer_len=0):
+    # type: (Any, str, Union[str, bytes], Union[str, bytes], int, int) -> bytes
     """
-    Simple wrapper for encrypt_message that adds random header and footer chars
+    Simple wrapper for encrypt_message that adds  a given (or random) header and footer
     This function solely exists for compat reasons
+    When a header/footer is added, it serves for message identification (eg like rsa key header/footers)
+    When random bytes are requested, it serves to additional scramble data
     """
-    header = generate_random_string(random_header_len).encode("utf-8")
-    footer = generate_random_string(random_footer_len).encode("utf-8")
+    if header and isinstance(header, str):
+        header = header.encode('utf-8')
+    if random_header_len > 0:
+        header += generate_random_string(random_header_len).encode("utf-8")
+    if footer and isinstance(footer, str):
+        footer = footer.encode('utf-8')
+    if random_footer_len > 0:
+        footer += generate_random_string(random_footer_len).encode("utf-8")
     return header + encrypt_message(msg, key) + footer
 
 
@@ -147,12 +155,18 @@ def rsa_encrypt_message(msg, public_key):
     return enc_session_key + aes_encrypt_message(msg, session_key)
 
 
-def decrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
-    # type: (Union[bytes, str], str, int, int) -> Tuple[datetime, Any]
+def decrypt_message_hf(msg, key, header=None, footer=None, random_header_len=0, random_footer_len=0):
+    # type: (Union[bytes, str], str, Union[str, bytes], Union[str, bytes], int, int) -> Tuple[datetime, Any]
     """
     Simple wrapper for decrypt_message that adds random header and footer chars
     This function solely exists for compat reasons
     """
+    # Remove header and footer if set
+    if header:
+        msg = msg[len(header):]
+    if footer:
+        msg = msg[:-len(footer)]
+
     if random_footer_len > 0:
         return decrypt_message(msg[random_header_len:][:-random_footer_len], key)
     else:
@@ -190,7 +204,7 @@ def rsa_decrypt_message(msg, private_key):
     enc_session_key_size = int(private_key.size_in_bits() / 8)
 
     cipher_rsa = PKCS1_OAEP.new(key=private_key, hashAlgo=HASH_ALGO)
-    private_key = None
+    private_key = None  # Wipe from memory as soon as possible
     enc_session_key, aes_encrypted_msg = (
         msg[0:enc_session_key_size],
         msg[enc_session_key_size:],

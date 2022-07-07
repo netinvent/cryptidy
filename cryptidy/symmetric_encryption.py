@@ -102,15 +102,24 @@ def verify_key(aes_key):
         raise TypeError("Wrong encryption key provided. Key type should be binary.")
 
 
-def encrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
-    # type: (Any, bytes, int, int) -> bytes
+def encrypt_message_hf(msg, key, header=b'', footer=b'', random_header_len=0, random_footer_len=0):
+    # type: (Any, bytes, Union[str, bytes], Union[str, bytes], int, int) -> bytes
     """
-    Simple wrapper for encrypt_message that adds random header and footer chars
+    Simple wrapper for encrypt_message that adds  a given (or random) header and footer
     This function solely exists for compat reasons
+    When a header/footer is added, it serves for message identification (eg like rsa key header/footers)
+    When random bytes are requested, it serves to additional scramble data
     """
-    header = generate_random_string(random_header_len).encode("utf-8")
-    footer = generate_random_string(random_footer_len).encode("utf-8")
-    return header + encrypt_message(msg, key) + footer
+    if header and isinstance(header, str):
+        header = header.encode('utf-8')
+    if random_header_len > 0:
+        header += generate_random_string(random_header_len).encode("utf-8")
+    if footer and isinstance(footer, str):
+        footer = footer.encode('utf-8')
+    if random_footer_len > 0:
+        footer += generate_random_string(random_footer_len).encode("utf-8")
+    enc_msg = encrypt_message(msg, key)
+    return header + enc_msg + footer
 
 
 def encrypt_message(msg, aes_key):
@@ -152,12 +161,18 @@ def aes_encrypt_message(msg, aes_key):
         raise ValueError("Cannot AES encrypt data: %s." % exc)
 
 
-def decrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
-    # type: (Union[bytes, str], bytes, int, int) -> Tuple[datetime, Any]
+def decrypt_message_hf(msg, key, header=None, footer=None, random_header_len=0, random_footer_len=0):
+    # type: (Union[bytes, str], bytes, Union[str, bytes], Union[str, bytes], int, int) -> Tuple[datetime, Any]
     """
     Simple wrapper for decrypt_message that adds random header and footer chars
     This function solely exists for compat reasons
     """
+    # Remove header and footer if set
+    if header:
+        msg = msg[len(header):]
+    if footer:
+        msg = msg[:-len(footer)]
+
     if random_footer_len > 0:
         return decrypt_message(msg[random_header_len:][:-random_footer_len], key)
     else:
@@ -167,7 +182,7 @@ def decrypt_message_hf(msg, key, random_header_len=63, random_footer_len=31):
 def decrypt_message(msg, aes_key):
     # type: (Union[bytes, str], bytes) -> Tuple[datetime, Any]
     """
-    Simple base64 wrapper for aes_decrypt_message
+    Simple base64 wrapper for aes_decrypt_message that adds optional headers and footers for message identification
     """
     verify_key(aes_key)
     try:  # COMPAT-0.9
@@ -215,6 +230,7 @@ def aes_decrypt_message(msg, aes_key):
 
     try:
         data = aes_decrypt(aes_key, nonce, tag, ciphertext)
+        aes_key = None  # Wipe from memory as soon as possible
         try:
             data = pickle.loads(data)
         # May happen on unpickled encrypted data when pickling failed on encryption and fallback was used
