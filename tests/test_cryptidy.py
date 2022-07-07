@@ -17,10 +17,10 @@ Versioning semantics:
 
 __intname__ = 'cryptidy_tests'
 __author__ = 'Orsiris de Jong'
-__copyright__ = 'Copyright (C) 2018-2021 Orsiris de Jong'
+__copyright__ = 'Copyright (C) 2018-2022 Orsiris de Jong'
 __licence__ = 'BSD 3 Clause'
-__version__ = '1.0.1'
-__build__ = '2021011101'
+__version__ = '1.1.0'
+__build__ = '2022070701'
 
 from cryptidy import padding
 from cryptidy import aes_encryption
@@ -28,7 +28,7 @@ from cryptidy import symmetric_encryption
 from cryptidy import asymmetric_encryption
 
 
-def test_pad_selftest():
+def test_pad():
     print('Testing padding functions')
     from datetime import datetime
     msg = '%s' % datetime.now()
@@ -42,7 +42,7 @@ def test_pad_selftest():
     assert msg == unpadded_msg, 'Original message and unpadded one should be the same.'
 
 
-def test_aes_selftest():
+def test_aes():
     """
     Self test function
     """
@@ -63,7 +63,7 @@ def test_aes_selftest():
         assert msg == dec_msg, 'Original message and decrypted one should be the same.'
 
 
-def test_sym_selftest():
+def test_sym():
     """
     Self test function
     """
@@ -101,9 +101,56 @@ def test_sym_selftest():
         print('Decrypted multiline string: date=%s: %s ' % (timestamp, dec_mlstring))
 
         assert test_mlstring == dec_mlstring, 'Original multiline string and decrypted one should be the same.'
+        
+        
+def test_sym_hf():
+    """
+    Self test for added header /footers
+    """
+    key = symmetric_encryption.generate_key(16)
+    msg = 'Some message'
+    
+    header = 'SomeHeader'
+    footer = 'SomeFooter'
+    random_header_len=20
+    random_footer_len=41
+    
+    # with header   
+    enc_msg = symmetric_encryption.encrypt_message_hf(msg, key, header=header)
+    timestamp, dec_msg = symmetric_encryption.decrypt_message_hf(enc_msg, key, header=header)
+    assert msg == dec_msg, 'Message is altered with header'
 
+    # with footer   
+    enc_msg = symmetric_encryption.encrypt_message_hf(msg, key, header=footer)
+    timestamp, dec_msg = symmetric_encryption.decrypt_message_hf(enc_msg, key, header=footer)
+    assert msg == dec_msg, 'Message is altered with footer'
+    
+    # with both header and footer   
+    enc_msg = symmetric_encryption.encrypt_message_hf(msg, key, header=header, footer=footer)
+    timestamp, dec_msg = symmetric_encryption.decrypt_message_hf(enc_msg, key, header=header, footer=footer)
+    assert msg == dec_msg, 'Message is altered with header and footer'
+    
+    # with random header   
+    enc_msg = symmetric_encryption.encrypt_message_hf(msg, key, random_header_len=random_header_len)
+    timestamp, dec_msg = symmetric_encryption.decrypt_message_hf(enc_msg, key, random_header_len=random_header_len)
+    assert msg == dec_msg, 'Message is altered with random header'
+    
+    # with random footer   
+    enc_msg = symmetric_encryption.encrypt_message_hf(msg, key, random_footer_len=random_footer_len)
+    timestamp, dec_msg = symmetric_encryption.decrypt_message_hf(enc_msg, key, random_footer_len=random_footer_len)
+    assert msg == dec_msg, 'Message is altered with random footer'
+    
+    # with both random header and footer   
+    enc_msg = symmetric_encryption.encrypt_message_hf(msg, key, random_header_len=random_header_len, random_footer_len=random_footer_len)
+    timestamp, dec_msg = symmetric_encryption.decrypt_message_hf(enc_msg, key, random_header_len=random_header_len, random_footer_len=random_footer_len)
+    assert msg == dec_msg, 'Message is altered with random header and footer'
 
-def test_asym_selftest():
+    # with header, footer, random header and random footer
+    enc_msg = symmetric_encryption.encrypt_message_hf(msg, key, header=header, footer=footer, random_header_len=random_header_len, random_footer_len=random_footer_len)
+    timestamp, dec_msg = symmetric_encryption.decrypt_message_hf(enc_msg, key, header=header, footer=footer, random_header_len=random_header_len, random_footer_len=random_footer_len)
+    assert msg == dec_msg, 'Message is altered with header, footer, random header and random footer'
+
+def test_asym():
     """
     Self test function
     """
@@ -144,9 +191,64 @@ def test_asym_selftest():
         print('Test done with %s bits RSA key.' % key_size)
 
 
+def test_asym_hf():
+    """
+    Self test for added header /footers
+    """
+    priv_key, pub_key = asymmetric_encryption.generate_keys(1024)
+    msg = 'Some message'
+
+    header = 'SomeHeader'
+    footer = 'SomeFooter'
+    random_header_len = 20
+    random_footer_len = 41
+
+    # with header   
+    enc_msg = asymmetric_encryption.encrypt_message_hf(msg, pub_key, header=header)
+    timestamp, dec_msg = asymmetric_encryption.decrypt_message_hf(enc_msg, priv_key, header=header)
+    assert msg == dec_msg, 'Message is altered'
+
+    # with footer   
+    enc_msg = asymmetric_encryption.encrypt_message_hf(msg, pub_key, header=footer)
+    timestamp, dec_msg = asymmetric_encryption.decrypt_message_hf(enc_msg, priv_key, header=footer)
+    assert msg == dec_msg, 'Message is altered'
+
+    # with both header and footer   
+    enc_msg = asymmetric_encryption.encrypt_message_hf(msg, pub_key, header=header, footer=footer)
+    timestamp, dec_msg = asymmetric_encryption.decrypt_message_hf(enc_msg, priv_key, header=header, footer=footer)
+    assert msg == dec_msg, 'Message is altered'
+
+    # with random header   
+    enc_msg = asymmetric_encryption.encrypt_message_hf(msg, pub_key, random_header_len=random_header_len)
+    timestamp, dec_msg = asymmetric_encryption.decrypt_message_hf(enc_msg, priv_key, random_header_len=random_header_len)
+    assert msg == dec_msg, 'Message is altered'
+
+    # with random footer   
+    enc_msg = asymmetric_encryption.encrypt_message_hf(msg, pub_key, random_footer_len=random_footer_len)
+    timestamp, dec_msg = asymmetric_encryption.decrypt_message_hf(enc_msg, priv_key, random_footer_len=random_footer_len)
+    assert msg == dec_msg, 'Message is altered'
+
+    # with both random header and footer   
+    enc_msg = asymmetric_encryption.encrypt_message_hf(msg, pub_key, random_header_len=random_header_len,
+                                                      random_footer_len=random_footer_len)
+    timestamp, dec_msg = asymmetric_encryption.decrypt_message_hf(enc_msg, priv_key, random_header_len=random_header_len,
+                                                                 random_footer_len=random_footer_len)
+    assert msg == dec_msg, 'Message is altered'
+
+    # with header, footer, random header and random footer   
+    enc_msg = asymmetric_encryption.encrypt_message_hf(msg, pub_key, header=header, footer=footer,
+                                                      random_header_len=random_header_len,
+                                                      random_footer_len=random_footer_len)
+    timestamp, dec_msg = asymmetric_encryption.decrypt_message_hf(enc_msg, priv_key, header=header, footer=footer,
+                                                                 random_header_len=random_header_len,
+                                                                 random_footer_len=random_footer_len)
+    assert msg == dec_msg, 'Message is altered'
+
 if __name__ == '__main__':
     print('Example code for %s, %s' % (__intname__, __build__))
-    test_pad_selftest()
-    test_aes_selftest()
-    test_sym_selftest()
-    test_asym_selftest()
+    test_pad()
+    test_aes()
+    test_sym()
+    test_sym_hf()
+    test_asym()
+    test_asym_hf()
