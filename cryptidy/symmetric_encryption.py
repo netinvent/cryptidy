@@ -102,7 +102,9 @@ def verify_key(aes_key):
         raise TypeError("Wrong encryption key provided. Key type should be binary.")
 
 
-def encrypt_message_hf(msg, key, header=b'', footer=b'', random_header_len=0, random_footer_len=0):
+def encrypt_message_hf(
+    msg, key, header=b"", footer=b"", random_header_len=0, random_footer_len=0
+):
     # type: (Any, bytes, Union[str, bytes], Union[str, bytes], int, int) -> bytes
     """
     Simple wrapper for encrypt_message that adds  a given (or random) header and footer
@@ -111,11 +113,11 @@ def encrypt_message_hf(msg, key, header=b'', footer=b'', random_header_len=0, ra
     When random bytes are requested, it serves to additional scramble data
     """
     if header and isinstance(header, str):
-        header = header.encode('utf-8')
+        header = header.encode("utf-8")
     if random_header_len > 0:
         header += generate_random_string(random_header_len).encode("utf-8")
     if footer and isinstance(footer, str):
-        footer = footer.encode('utf-8')
+        footer = footer.encode("utf-8")
     if random_footer_len > 0:
         footer += generate_random_string(random_footer_len).encode("utf-8")
     enc_msg = encrypt_message(msg, key)
@@ -161,7 +163,9 @@ def aes_encrypt_message(msg, aes_key):
         raise ValueError("Cannot AES encrypt data: %s." % exc)
 
 
-def decrypt_message_hf(msg, key, header=None, footer=None, random_header_len=0, random_footer_len=0):
+def decrypt_message_hf(
+    msg, key, header=None, footer=None, random_header_len=0, random_footer_len=0
+):
     # type: (Union[bytes, str], bytes, Union[str, bytes], Union[str, bytes], int, int) -> Tuple[datetime, Any]
     """
     Simple wrapper for decrypt_message that adds random header and footer chars
@@ -169,9 +173,9 @@ def decrypt_message_hf(msg, key, header=None, footer=None, random_header_len=0, 
     """
     # Remove header and footer if set
     if header:
-        msg = msg[len(header):]
+        msg = msg[len(header) :]
     if footer:
-        msg = msg[:-len(footer)]
+        msg = msg[: -len(footer)]
 
     if random_footer_len > 0:
         return decrypt_message(msg[random_header_len:][:-random_footer_len], key)
