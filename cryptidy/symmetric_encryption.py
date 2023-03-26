@@ -68,15 +68,9 @@ except ImportError:
         generate_key,
     )  # noqa: F401
 try:
-    from cryptidy.hf_handling import (
-        add_hf,
-        remove_hf
-    )
+    from cryptidy.hf_handling import add_hf, remove_hf
 except ImportError:
-    from .hf_handling import (
-        add_hf,
-        remove_hf
-    )
+    from .hf_handling import add_hf, remove_hf
 # Python 2.7 compat fixes (missing typing and FileNotFoundError)
 try:
     from typing import Any, Union, Tuple
@@ -115,7 +109,9 @@ def encrypt_message_hf(
     """
     Optional (user called fn) add headers / footers after encrypting
     """
-    return add_hf(msg, key, encrypt_message, header, footer, random_header_len, random_footer_len)
+    return add_hf(
+        msg, key, encrypt_message, header, footer, random_header_len, random_footer_len
+    )
 
 
 def encrypt_message(msg, aes_key):
@@ -149,12 +145,16 @@ def aes_encrypt_message(msg, aes_key):
             elif isinstance(msg, str):
                 nonce, tag, ciphertext = aes_encrypt(msg.encode("utf-8"), aes_key)
             else:
-                raise ValueError("Invalid type of data given for AES encryption.")
+                raise ValueError(
+                    "Invalid type of data given for AES encryption."
+                )  # pylint: disable=W0707,raise-missing-from
 
         timestamp = pad(str(timestamp_get())).encode("utf-8")
         return nonce + tag + timestamp + ciphertext
     except Exception as exc:  # pylint: disable=W0703,broad-except
-        raise ValueError("Cannot AES encrypt data: %s." % exc)
+        raise ValueError(
+            "Cannot AES encrypt data: %s." % exc
+        )  # pylint: disable=W0707,raise-missing-from
 
 
 def decrypt_message_hf(
@@ -164,7 +164,9 @@ def decrypt_message_hf(
     """
     Optional (user called fn) remove headers / footers before decrypting
     """
-    return remove_hf(msg, key, decrypt_message, header, footer, random_header_len, random_footer_len)
+    return remove_hf(
+        msg, key, decrypt_message, header, footer, random_header_len, random_footer_len
+    )
 
 
 def decrypt_message(msg, aes_key):
@@ -176,7 +178,9 @@ def decrypt_message(msg, aes_key):
     try:
         decoded_msg = b64decode(msg)
     except (TypeError, binascii_Error):
-        raise TypeError("decrypt_message accepts b64 encoded byte objects")
+        raise TypeError(
+            "decrypt_message accepts b64 encoded byte objects"
+        )  # pylint: disable=W0707,raise-missing-from
     return aes_decrypt_message(decoded_msg, aes_key)
 
 
@@ -208,8 +212,10 @@ def aes_decrypt_message(msg, aes_key):
         UnicodeDecodeError,
         ValueError,
         IndexError,
-    ):
-        raise ValueError("Encryption timestamp is bogus")
+    ) as exc:
+        raise ValueError(
+            "Encryption timestamp is bogus: {}".format(exc)
+        )  # pylint: disable=W0707,raise-missing-from
 
     try:
         data = aes_decrypt(aes_key, nonce, tag, ciphertext)
@@ -232,4 +238,4 @@ def aes_decrypt_message(msg, aes_key):
             logger.info("Trace:", exc_info=True)
         return source_timestamp, data
     except Exception as exc:  # pylint: disable=W0703,broad-except
-        raise ValueError("Cannot decrypt AES data: %s" % exc) from None
+        raise ValueError("Cannot decrypt AES data: {}".format(exc)) from None

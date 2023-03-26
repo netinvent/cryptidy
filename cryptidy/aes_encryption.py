@@ -48,7 +48,9 @@ def generate_key(size=32):
         aes_key = get_random_bytes(size)
         return aes_key
     except Exception as exc:  # pylint: disable=W0703,broad-except
-        raise ValueError("Cannot generate AES key: %s" % exc)
+        raise ValueError(
+            "Cannot generate AES key: %s" % exc
+        )  # pylint: disable=W0707,raise-missing-from
 
 
 def aes_encrypt(msg, aes_key):

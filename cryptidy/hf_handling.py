@@ -39,7 +39,13 @@ except ImportError:
 
 
 def add_hf(
-    msg, key, fn, header=b"", footer=b"", random_header_len=0, random_footer_len=0
+    msg,
+    key,
+    encrypt_fn,
+    header=b"",
+    footer=b"",
+    random_header_len=0,
+    random_footer_len=0,
 ):
     # type: (Any, str, Callable, Union[str, bytes], Union[str, bytes], int, int) -> bytes
     """
@@ -56,11 +62,17 @@ def add_hf(
         footer = footer.encode("utf-8")
     if random_footer_len > 0:
         footer += generate_random_string(random_footer_len).encode("utf-8")
-    return header + fn(msg, key) + footer
+    return header + encrypt_fn(msg, key) + footer
 
 
 def remove_hf(
-    msg, key, fn, header=None, footer=None, random_header_len=0, random_footer_len=0
+    msg,
+    key,
+    decrypt_fn,
+    header=None,
+    footer=None,
+    random_header_len=0,
+    random_footer_len=0,
 ):
     # type: (Union[bytes, str], str, Callable, Union[str, bytes], Union[str, bytes], int, int) -> Tuple[datetime, Any]
     """
@@ -74,6 +86,5 @@ def remove_hf(
         msg = msg[: -len(footer)]
 
     if random_footer_len > 0:
-        return fn(msg[random_header_len:][:-random_footer_len], key)
-    else:
-        return fn(msg[random_header_len:], key)
+        return decrypt_fn(msg[random_header_len:][:-random_footer_len], key)
+    return decrypt_fn(msg[random_header_len:], key)

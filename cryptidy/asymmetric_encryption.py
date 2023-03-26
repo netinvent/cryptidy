@@ -41,19 +41,9 @@ except ImportError:
     from .symmetric_encryption import aes_encrypt_message, aes_decrypt_message
 # Try to import as absolute when used as module, import as relative for autotests
 try:
-    from cryptidy.aes_encryption import generate_random_string
+    from cryptidy.hf_handling import add_hf, remove_hf
 except ImportError:
-    from .aes_encryption import generate_random_string
-try:
-    from cryptidy.hf_handling import (
-        add_hf,
-        remove_hf
-    )
-except ImportError:
-    from .hf_handling import (
-        add_hf,
-        remove_hf
-    )
+    from .hf_handling import add_hf, remove_hf
 # Python 2.7 compat fixes (missing typing and FileNotFoundError)
 try:
     from typing import Any, Tuple, Union
@@ -114,7 +104,9 @@ def encrypt_message_hf(
     """
     Optional (user called fn) add headers / footers after encrypting
     """
-    return add_hf(msg, key, encrypt_message, header, footer, random_header_len, random_footer_len)
+    return add_hf(
+        msg, key, encrypt_message, header, footer, random_header_len, random_footer_len
+    )
 
 
 def encrypt_message(msg, public_key):
@@ -166,7 +158,9 @@ def decrypt_message_hf(
     """
     Optional (user called fn) remove headers / footers before decrypting
     """
-    return remove_hf(msg, key, decrypt_message, header, footer, random_header_len, random_footer_len)
+    return remove_hf(
+        msg, key, decrypt_message, header, footer, random_header_len, random_footer_len
+    )
 
 
 def decrypt_message(msg, private_key):
@@ -182,7 +176,9 @@ def decrypt_message(msg, private_key):
     try:
         decoded_msg = b64decode(msg)
     except (TypeError, binascii_Error):
-        raise TypeError("decrypt_message accepts b64 encoded byte objects")
+        raise TypeError(
+            "decrypt_message accepts b64 encoded byte objects"
+        )  # pylint: disable=W0707,raise-missing-from
 
     return rsa_decrypt_message(decoded_msg, private_key)
 
@@ -208,7 +204,9 @@ def rsa_decrypt_message(msg, private_key):
     try:
         session_key = cipher_rsa.decrypt(enc_session_key)
     except TypeError:
-        raise TypeError("You need a private key to decrypt data.")
+        raise TypeError(
+            "You need a private key to decrypt data."
+        )  # pylint: disable=W0707,raise-missing-from
     except ValueError:
         raise ValueError("RSA Integrity check failed, cannot decrypt data.") from None
 
