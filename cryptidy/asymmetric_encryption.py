@@ -142,19 +142,22 @@ def rsa_encrypt_message(msg, public_key):
     """
     # Note: No need to pickle the message, since this will be done in symmetric encryption
 
-    # Triggers ValueError on invalid pubkey
-    public_key = RSA.import_key(public_key)
-    cipher_rsa = PKCS1_OAEP.new(key=public_key, hashAlgo=HASH_ALGO)
+    try:
+        # Triggers ValueError on invalid pubkey
+        public_key = RSA.import_key(public_key)
+        cipher_rsa = PKCS1_OAEP.new(key=public_key, hashAlgo=HASH_ALGO)
 
-    # Let's create an aes encryption key based on the RSA pubkey size
-    session_key_size = int(public_key.size_in_bits() / 64)
-    # Allowed Cryptodomex session_key_sizes are 16, 24 and 32
-    session_key_size = 32 if session_key_size > 32 else session_key_size
-    session_key = get_random_bytes(session_key_size)
+        # Let's create an aes encryption key based on the RSA pubkey size
+        session_key_size = int(public_key.size_in_bits() / 64)
+        # Allowed Cryptodomex session_key_sizes are 16, 24 and 32
+        session_key_size = 32 if session_key_size > 32 else session_key_size
+        session_key = get_random_bytes(session_key_size)
 
-    # RSA encrypt the aes encryption key and use the original key to encrypt our message using AES
-    enc_session_key = cipher_rsa.encrypt(session_key)
-    return enc_session_key + aes_encrypt_message(msg, session_key)
+        # RSA encrypt the aes encryption key and use the original key to encrypt our message using AES
+        enc_session_key = cipher_rsa.encrypt(session_key)
+        return enc_session_key + aes_encrypt_message(msg, session_key)
+    except Exception as exc:  # pylint: disable=W0703,broad-except
+        raise ValueError("Cannot RSA encrypt data: %s" % exc) from None
 
 
 def decrypt_message_hf(
@@ -218,6 +221,6 @@ def rsa_decrypt_message(msg, private_key):
     except TypeError:
         raise TypeError("You need a private key to decrypt data.")
     except ValueError:
-        raise ValueError("RSA Integrity check failed, cannot decrypt data.")
+        raise ValueError("RSA Integrity check failed, cannot decrypt data.") from None
 
     return aes_decrypt_message(aes_encrypted_msg, session_key)
