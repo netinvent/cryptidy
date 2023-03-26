@@ -10,16 +10,16 @@
 [![GitHub Release](https://img.shields.io/github/release/netinvent/cryptidy.svg?label=Latest)](https://github.com/netinvent/cryptidy/releases/latest)
 
 This library has been written to make encryption / decryption of any python object as simple as possible, while keeping the encryption solution secure.
-It is based on pycryptodomex AES  and RSA encrpytion implementatios.
+It is based on pycryptodomex AES and RSA encrpytion implementations.
 
 It's main features are:
  - Encrypt any pickable Python object / variable / blob
  - Add an UTC timestamp to the encrypted message
  - Verify that decrypted messages timestamps aren't in the future or too old (for bad RTC clock diags)
- - Allow symmetric encryption (AES)
+ - Allow symmetric encryption (AES-EAX mode)
      - 128, 192 or 256 bits encryption
- - Allow asymmetric encryption (RSA + AES)
-     - 1024, 2048 or 4096 bits RSA encryption with AES256 session encryption
+ - Allow asymmetric encryption (RSA encryption with SHA384 hash algorithm and above AES encryption)
+     - 1024, 2048 or 4096 bits RSA encryption with AES-256 session encryption
  - Provide the encypted data as base64 string for maximum portability between platforms and encodings
  - Unload AES key from memory as soon as possible to help prevent memory attacks
 
