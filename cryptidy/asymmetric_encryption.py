@@ -148,7 +148,7 @@ def rsa_encrypt_message(msg, public_key):
         enc_session_key = cipher_rsa.encrypt(session_key)
         return enc_session_key + aes_encrypt_message(msg, session_key)
     except Exception as exc:  # pylint: disable=W0703,broad-except
-        if (sys.version_info[0] == 3 and sys.version_info[1] < 3):
+        if (sys.version_info[0] == 3 and sys.version_info[1] > 3):
             raise ValueError("Cannot RSA encrypt data: %s" % exc)
         raise ValueError("Cannot RSA encrypt data: %s" % exc) from None
 
