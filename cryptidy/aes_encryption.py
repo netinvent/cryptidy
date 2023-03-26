@@ -20,6 +20,7 @@ __licence__ = "BSD 3 Clause"
 __version__ = "1.2.0"
 __build__ = "2023032601"
 
+import sys
 from logging import getLogger
 import string
 import random
@@ -74,8 +75,10 @@ def aes_encrypt(msg, aes_key):
         ciphertext, tag = cipher.encrypt_and_digest(msg)
         return cipher.nonce, tag, ciphertext
     except Exception as exc:  # pylint: disable=W0703,broad-except
+        if (sys.version_info[0] == 3 and sys.version_info[1] < 3):
+            raise ValueError("Encrypt failed: %s" % exc)
         raise ValueError("Encrypt failed: %s" % exc) from None
-
+        
 
 def aes_decrypt(aes_key, nonce, tag, ciphertext):
     # type: (bytes, bytes, bytes, bytes) -> bytes
@@ -100,6 +103,8 @@ def aes_decrypt(aes_key, nonce, tag, ciphertext):
         data = cipher.decrypt_and_verify(ciphertext, tag)
         return data
     except Exception as exc:  # pylint: disable=W0703,broad-except
+        if (sys.version_info[0] == 3 and sys.version_info[1] < 3):
+            raise ValueError("Decrypt failed: %s" % exc)
         raise ValueError("Decrypt failed: %s" % exc) from None
 
 
