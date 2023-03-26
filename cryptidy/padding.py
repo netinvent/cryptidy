@@ -15,7 +15,7 @@ Versioning semantics:
 
 __intname__ = "cryptidy.padding"
 __author__ = "Orsiris de Jong"
-__copyright__ = "Copyright (C) 2018-2021 Orsiris de Jong"
+__copyright__ = "Copyright (C) 2018-2023 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
 __version__ = "0.1.2"
 __build__ = "2021011101"
