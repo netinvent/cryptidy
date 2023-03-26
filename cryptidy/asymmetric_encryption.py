@@ -155,7 +155,7 @@ def rsa_encrypt_message(msg, public_key):
         ):
             exec(err)
         else:
-            exec(err + " form None")
+            exec(err + " from None")
 
 
 def decrypt_message_hf(
@@ -224,6 +224,6 @@ def rsa_decrypt_message(msg, private_key):
         ):
             exec(err)
         else:
-            exec(err + " form None")
+            exec(err + " from None")
 
     return aes_decrypt_message(aes_encrypted_msg, session_key)

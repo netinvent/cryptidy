@@ -82,7 +82,7 @@ def aes_encrypt(msg, aes_key):
         ):
             exec(err)
         else:
-            exec(err + " form None")
+            exec(err + " from None")
 
 
 def aes_decrypt(aes_key, nonce, tag, ciphertext):
@@ -115,7 +115,7 @@ def aes_decrypt(aes_key, nonce, tag, ciphertext):
         ):
             exec(err)
         else:
-            exec(err + " form None")
+            exec(err + " from None")
 
 
 def generate_random_string(size=8, chars=string.ascii_letters + string.digits):
