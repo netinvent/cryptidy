@@ -47,7 +47,7 @@ def generate_key(size=32):
     try:
         aes_key = get_random_bytes(size)
         return aes_key
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=W0703,broad-except
         raise ValueError("Cannot generate AES key: %s" % exc)
 
 
@@ -71,8 +71,8 @@ def aes_encrypt(msg, aes_key):
 
         ciphertext, tag = cipher.encrypt_and_digest(msg)
         return cipher.nonce, tag, ciphertext
-    except Exception as exc:
-        raise ValueError("Cannot encode AES data: %s" % exc)
+    except Exception as exc:  # pylint: disable=W0703,broad-except
+        raise ValueError("Encrypt failed: %s" % exc) from None
 
 
 def aes_decrypt(aes_key, nonce, tag, ciphertext):
@@ -97,8 +97,8 @@ def aes_decrypt(aes_key, nonce, tag, ciphertext):
 
         data = cipher.decrypt_and_verify(ciphertext, tag)
         return data
-    except Exception as exc:
-        raise ValueError("Cannot read AES data: %s" % exc)
+    except Exception as exc:  # pylint: disable=W0703,broad-except
+        raise ValueError("Decrypt failed: %s" % exc) from None
 
 
 def generate_random_string(size=8, chars=string.ascii_letters + string.digits):
