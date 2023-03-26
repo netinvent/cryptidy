@@ -149,9 +149,6 @@ def rsa_encrypt_message(msg, public_key):
         return enc_session_key + aes_encrypt_message(msg, session_key)
     except Exception as exc:  # pylint: disable=W0703,broad-except
         raise ValueError("Cannot RSA encrypt data: %s" % exc) from None
-    except SyntaxError:
-        # Python 2.7 compat fixes (missing 'from None' as of PEP-0409)
-        raise ValueError("Cannot RSA encrypt data: %s" % exc)  # pylint: disable=W0707,raise-missing-from
 
 
 def decrypt_message_hf(
@@ -210,14 +207,7 @@ def rsa_decrypt_message(msg, private_key):
         raise TypeError(
             "You need a private key to decrypt data."
         )  # pylint: disable=W0707,raise-missing-from
-    except ValueError as exc:
-        raise ValueError(
-            "RSA Integrity check failed, cannot decrypt data: {}".format(exc)
-        ) from None
-    except SyntaxError:
-        # Python 2.7 compat fixes (missing 'from None' as of PEP-0409)
-        raise ValueError(
-            "RSA Integrity check failed, cannot decrypt data: {}".format(exc)
-        )  # pylint: disable=W0707,raise-missing-from
+    except ValueError:
+        raise ValueError("RSA Integrity check failed, cannot decrypt data.") from None
 
     return aes_decrypt_message(aes_encrypted_msg, session_key)

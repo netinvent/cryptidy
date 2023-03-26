@@ -74,11 +74,7 @@ def aes_encrypt(msg, aes_key):
         ciphertext, tag = cipher.encrypt_and_digest(msg)
         return cipher.nonce, tag, ciphertext
     except Exception as exc:  # pylint: disable=W0703,broad-except
-        try:
-            raise ValueError("Encrypt failed: %s" % exc) from None
-        except SyntaxError:
-            # Python 2.7 compat fixes (missing 'from None' as of PEP-0409)
-            raise ValueError("Encrypt failed: %s" % exc)  # pylint: disable=W0707,raise-missing-from
+        raise ValueError("Encrypt failed: %s" % exc) from None
 
 
 def aes_decrypt(aes_key, nonce, tag, ciphertext):
@@ -105,9 +101,6 @@ def aes_decrypt(aes_key, nonce, tag, ciphertext):
         return data
     except Exception as exc:  # pylint: disable=W0703,broad-except
         raise ValueError("Decrypt failed: %s" % exc) from None
-    except SyntaxError:
-        # Python 2.7 compat fixes (missing 'from None' as of PEP-0409)
-        raise ValueError("Decrypt failed: %s" % exc)  # pylint: disable=W0707,raise-missing-from
 
 
 def generate_random_string(size=8, chars=string.ascii_letters + string.digits):
