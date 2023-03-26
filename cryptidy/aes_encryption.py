@@ -76,11 +76,14 @@ def aes_encrypt(msg, aes_key):
         return cipher.nonce, tag, ciphertext
     except Exception as exc:  # pylint: disable=W0703,broad-except
         # goodenough(TM) Magic to avoid SyntaxError on PEP-0409 statements in Python < 3.3
-        err = "raise ValueError(\"Encrypt failed: %s\")".format(exc)
-        if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 4):
+        err = 'raise ValueError("Encrypt failed: %s")'.format(exc)
+        if sys.version_info[0] < 3 or (
+            sys.version_info[0] == 3 and sys.version_info[1] < 4
+        ):
             exec(err)
         else:
-            exec(err + ' form None')
+            exec(err + " form None")
+
 
 def aes_decrypt(aes_key, nonce, tag, ciphertext):
     # type: (bytes, bytes, bytes, bytes) -> bytes
@@ -106,11 +109,13 @@ def aes_decrypt(aes_key, nonce, tag, ciphertext):
         return data
     except Exception as exc:  # pylint: disable=W0703,broad-except
         # goodenough(TM) Magic to avoid SyntaxError on PEP-0409 statements in Python < 3.3
-        err = "raise ValueError(\"Decrypt failed: %s\")".format(exc)
-        if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 4):
+        err = 'raise ValueError("Decrypt failed: %s")'.format(exc)
+        if sys.version_info[0] < 3 or (
+            sys.version_info[0] == 3 and sys.version_info[1] < 4
+        ):
             exec(err)
         else:
-            exec(err + ' form None')
+            exec(err + " form None")
 
 
 def generate_random_string(size=8, chars=string.ascii_letters + string.digits):
