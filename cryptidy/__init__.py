@@ -16,3 +16,4 @@ __description__ = "Python high level library for symmetric & asymmetric encrypti
 __licence__ = "BSD 3 Clause"
 __version__ = "1.1.0"
 __build__ = "2022061001"
+__compat__ = "python2.7+"
