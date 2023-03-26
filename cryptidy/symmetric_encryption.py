@@ -157,7 +157,7 @@ def aes_encrypt_message(msg, aes_key):
 
         timestamp = pad(str(timestamp_get())).encode("utf-8")
         return nonce + tag + timestamp + ciphertext
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=W0703,broad-except
         raise ValueError("Cannot AES encrypt data: %s." % exc)
 
 
@@ -192,7 +192,6 @@ def decrypt_message(msg, aes_key):
     except (TypeError, binascii_Error):
         raise TypeError("decrypt_message accepts b64 encoded byte objects")
     return aes_decrypt_message(decoded_msg, aes_key)
-
 
 
 def aes_decrypt_message(msg, aes_key):
@@ -247,4 +246,4 @@ def aes_decrypt_message(msg, aes_key):
             logger.info("Trace:", exc_info=True)
         return source_timestamp, data
     except Exception as exc:  # pylint: disable=W0703,broad-except
-        raise ValueError("Cannot read AES data: %s" % exc)
+        raise ValueError("Cannot decrypt AES data: %s" % exc) from None
