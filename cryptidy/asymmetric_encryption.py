@@ -149,7 +149,7 @@ def rsa_encrypt_message(msg, public_key):
         return enc_session_key + aes_encrypt_message(msg, session_key)
     except Exception as exc:  # pylint: disable=W0703,broad-except
         # goodenough(TM) Magic to avoid SyntaxError on PEP-0409 statements in Python < 3.3
-        err = 'raise ValueError("Cannot RSA encrypt data: %s")'.format(exc)
+        err = 'raise ValueError("Cannot RSA encrypt data: {}")'.format(exc)
         if sys.version_info[0] < 3 or (
             sys.version_info[0] == 3 and sys.version_info[1] < 4
         ):
@@ -216,7 +216,7 @@ def rsa_decrypt_message(msg, private_key):
         )  # pylint: disable=W0707,raise-missing-from
     except ValueError as exc:
         # goodenough(TM) Magic to avoid SyntaxError on PEP-0409 statements in Python < 3.3
-        err = 'raise ValueError("RSA Integrity check failed, cannot decrypt data: %s")'.format(
+        err = 'raise ValueError("RSA Integrity check failed, cannot decrypt data: {}")'.format(
             exc
         )
         if sys.version_info[0] < 3 or (

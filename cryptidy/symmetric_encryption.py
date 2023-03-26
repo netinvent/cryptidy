@@ -239,7 +239,7 @@ def aes_decrypt_message(msg, aes_key):
         return source_timestamp, data
     except Exception as exc:  # pylint: disable=W0703,broad-except
         # goodenough(TM) Magic to avoid SyntaxError on PEP-0409 statements in Python < 3.3
-        err = 'raise ValueError("Cannot decrypt AES data: %s")'.format(exc)
+        err = 'raise ValueError("Cannot decrypt AES data: {}")'.format(exc)
         if sys.version_info[0] < 3 or (
             sys.version_info[0] == 3 and sys.version_info[1] < 4
         ):
