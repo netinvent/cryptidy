@@ -44,6 +44,16 @@ try:
     from cryptidy.aes_encryption import generate_random_string
 except ImportError:
     from .aes_encryption import generate_random_string
+try:
+    from cryptidy.hf_handling import (
+        add_hf,
+        remove_hf
+    )
+except ImportError:
+    from .hf_handling import (
+        add_hf,
+        remove_hf
+    )
 # Python 2.7 compat fixes (missing typing and FileNotFoundError)
 try:
     from typing import Any, Tuple, Union
@@ -102,20 +112,9 @@ def encrypt_message_hf(
 ):
     # type: (Any, str, Union[str, bytes], Union[str, bytes], int, int) -> bytes
     """
-    Simple wrapper for encrypt_message that adds  a given (or random) header and footer
-    This function solely exists for compat reasons
-    When a header/footer is added, it serves for message identification (eg like rsa key header/footers)
-    When random bytes are requested, it serves to additional scramble data
+    Optional (user called fn) add headers / footers after encrypting
     """
-    if header and isinstance(header, str):
-        header = header.encode("utf-8")
-    if random_header_len > 0:
-        header += generate_random_string(random_header_len).encode("utf-8")
-    if footer and isinstance(footer, str):
-        footer = footer.encode("utf-8")
-    if random_footer_len > 0:
-        footer += generate_random_string(random_footer_len).encode("utf-8")
-    return header + encrypt_message(msg, key) + footer
+    return add_hf(msg, key, encrypt_message, header, footer, random_header_len, random_footer_len)
 
 
 def encrypt_message(msg, public_key):
@@ -165,19 +164,9 @@ def decrypt_message_hf(
 ):
     # type: (Union[bytes, str], str, Union[str, bytes], Union[str, bytes], int, int) -> Tuple[datetime, Any]
     """
-    Simple wrapper for decrypt_message that adds random header and footer chars
-    This function solely exists for compat reasons
+    Optional (user called fn) remove headers / footers before decrypting
     """
-    # Remove header and footer if set
-    if header:
-        msg = msg[len(header) :]
-    if footer:
-        msg = msg[: -len(footer)]
-
-    if random_footer_len > 0:
-        return decrypt_message(msg[random_header_len:][:-random_footer_len], key)
-    else:
-        return decrypt_message(msg[random_header_len:], key)
+    return remove_hf(msg, key, decrypt_message, header, footer, random_header_len, random_footer_len)
 
 
 def decrypt_message(msg, private_key):
