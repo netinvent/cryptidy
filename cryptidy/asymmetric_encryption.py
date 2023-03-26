@@ -148,7 +148,12 @@ def rsa_encrypt_message(msg, public_key):
         enc_session_key = cipher_rsa.encrypt(session_key)
         return enc_session_key + aes_encrypt_message(msg, session_key)
     except Exception as exc:  # pylint: disable=W0703,broad-except
-        raise ValueError("Cannot RSA encrypt data: %s" % exc) from None
+        # goodenough(TM) Magic to avoid SyntaxError on PEP-0409 statements in Python < 3.3
+        err = "raise ValueError(\"Cannot RSA encrypt data: %s\")".format(exc)
+        if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 4):
+            exec(err)
+        else:
+            exec(err + ' form None')
 
 
 def decrypt_message_hf(
@@ -207,7 +212,13 @@ def rsa_decrypt_message(msg, private_key):
         raise TypeError(
             "You need a private key to decrypt data."
         )  # pylint: disable=W0707,raise-missing-from
-    except ValueError:
-        raise ValueError("RSA Integrity check failed, cannot decrypt data.") from None
+    except ValueError as exc:
+        # goodenough(TM) Magic to avoid SyntaxError on PEP-0409 statements in Python < 3.3
+        err = "raise ValueError(\"RSA Integrity check failed, cannot decrypt data: %s\")".format(exc)
+        if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 4):
+            exec(err)
+        else:
+            exec(err + ' form None')
+    
 
     return aes_decrypt_message(aes_encrypted_msg, session_key)
