@@ -15,10 +15,10 @@ Versioning semantics:
 
 __intname__ = "cryptidy.aes_encryption"
 __author__ = "Orsiris de Jong"
-__copyright__ = "Copyright (C) 2018-2021 Orsiris de Jong"
+__copyright__ = "Copyright (C) 2018-2023 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
-__version__ = "1.1.0"
-__build__ = "2022061001"
+__version__ = "1.2.0"
+__build__ = "2023032601"
 
 from logging import getLogger
 import string
