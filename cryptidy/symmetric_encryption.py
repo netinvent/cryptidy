@@ -239,3 +239,6 @@ def aes_decrypt_message(msg, aes_key):
         return source_timestamp, data
     except Exception as exc:  # pylint: disable=W0703,broad-except
         raise ValueError("Cannot decrypt AES data: {}".format(exc)) from None
+    except SyntaxError:
+        # Python 2.7 compat fixes (missing 'from None' as of PEP-0409)
+        raise ValueError("Cannot decrypt AES data: {}".format(exc))  # pylint: disable=W0707,raise-missing-from
