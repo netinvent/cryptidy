@@ -238,6 +238,6 @@ def aes_decrypt_message(msg, aes_key):
             logger.info("Trace:", exc_info=True)
         return source_timestamp, data
     except Exception as exc:  # pylint: disable=W0703,broad-except
-        if (sys.version_info[0] == 3 and sys.version_info[1] > 3):
+        if (sys.version_info[0] == 3 and sys.version_info[1] < 3):
             raise ValueError("Cannot decrypt AES data: {}".format(exc))
         raise ValueError("Cannot decrypt AES data: {}".format(exc)) from None
