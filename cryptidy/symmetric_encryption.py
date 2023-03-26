@@ -19,10 +19,8 @@ __intname__ = "cryptidy.symmetric_encryption"
 __author__ = "Orsiris de Jong"
 __copyright__ = "Copyright (C) 2018-2021 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
-__version__ = "1.1.0"
-__build__ = "2022061001"
-
-# Earlier versions of cryptidy <1.0.0 require to uncomment # COMPAT-0.9 comments
+__version__ = "1.1.1"
+__build__ = "2023013101"
 
 
 import pickle
@@ -189,15 +187,12 @@ def decrypt_message(msg, aes_key):
     Simple base64 wrapper for aes_decrypt_message that adds optional headers and footers for message identification
     """
     verify_key(aes_key)
-    try:  # COMPAT-0.9
-        try:
-            decoded_msg = b64decode(msg)
-        except (TypeError, binascii_Error):
-            raise TypeError("decrypt_message accepts b64 encoded byte objects")
-        return aes_decrypt_message(decoded_msg, aes_key)
-    #  Earlier cryptidy did not use b64 encoding, hence we need to be able to decode those elder messages # COMPAT-0.9
-    except ValueError:  # pylint: disable=W0703,broad-except  # COMPAT-0.9
-        return aes_decrypt_message(msg, aes_key)  # COMPAT-0.9
+    try:
+        decoded_msg = b64decode(msg)
+    except (TypeError, binascii_Error):
+        raise TypeError("decrypt_message accepts b64 encoded byte objects")
+    return aes_decrypt_message(decoded_msg, aes_key)
+
 
 
 def aes_decrypt_message(msg, aes_key):
@@ -211,7 +206,7 @@ def aes_decrypt_message(msg, aes_key):
     """
     nonce, tag, timestamp, ciphertext = (msg[0:16], msg[16:32], msg[32:64], msg[64:])
 
-    try:  # COMPAT-0.9
+    try:
         source_timestamp = float(unpad(timestamp.decode("utf-8")))
         timestamp_now = timestamp_get()
         if source_timestamp > timestamp_now:
@@ -228,9 +223,8 @@ def aes_decrypt_message(msg, aes_key):
         UnicodeDecodeError,
         ValueError,
         IndexError,
-    ):  # COMPAT-0.9
-        source_timestamp = None  # COMPAT-0.9
-        ciphertext = msg[32:]  # COMPAT-0.9
+    ):
+        raise ValueError("Encryption timestamp is bogus")
 
     try:
         data = aes_decrypt(aes_key, nonce, tag, ciphertext)
