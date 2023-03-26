@@ -19,7 +19,7 @@ __intname__ = "cryptidy.symmetric_encryption"
 __author__ = "Orsiris de Jong"
 __copyright__ = "Copyright (C) 2018-2023 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 __build__ = "2023032601"
 
 
