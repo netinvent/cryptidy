@@ -25,7 +25,9 @@ It's main features are:
 
 # Setup
 
-cryptidy requires Python 2.7+
+Current cryptidy tests are Python 3.7 and up.  
+Nevertheless, cryptidy v1.2.3 still runs on Python 2.7+ ;)
+
 
 `pip install cryptidy`
 
