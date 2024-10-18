@@ -77,7 +77,7 @@ try:
 except ImportError:
     pass
 
-logger = getLogger(__name__)
+logger = getLogger()
 
 
 def verify_key(aes_key):
@@ -199,7 +199,8 @@ def aes_decrypt_message(msg, aes_key):
         source_timestamp = float(unpad(timestamp.decode("utf-8")))
         timestamp_now = timestamp_get()
         if source_timestamp > timestamp_now:
-            print("*** WARNING *** Encrypted data timestamp is in future\n")
+            msg = "*** WARNING *** Encrypted data timestamp is in future\n"
+            logger.warning(msg)
         source_timestamp = datetime.fromtimestamp(source_timestamp)
     except (
         TypeError,

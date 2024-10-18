@@ -19,8 +19,8 @@ __intname__ = "cryptidy.asymmetric_encryption"
 __author__ = "Orsiris de Jong"
 __copyright__ = "Copyright (C) 2020-2023 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
-__version__ = "1.2.2"
-__build__ = "2023032601"
+__version__ = "1.2.3"
+__build__ = "2024101801"
 
 import sys
 from logging import getLogger
@@ -50,7 +50,7 @@ try:
 except ImportError:
     pass
 
-logger = getLogger(__name__)
+logger = getLogger()
 
 
 def generate_keys(length=2048):
