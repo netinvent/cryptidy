@@ -35,7 +35,7 @@ if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] 
 
     def timestamp_get():
         """
-        Get UTC timestamp
+        Get UTC timestamp (naive timezone)
         """
         return time.mktime(datetime.datetime.utcnow().timetuple())
 
@@ -43,9 +43,11 @@ else:
 
     def timestamp_get():
         """
-        Get UTC timestamp
+        Get UTC timestamp (timezone aware)
+        Python 3.12 will have dateime.UTC as shortcut for datetime.timezone.utc
         """
-        return datetime.datetime.now(datetime.UTC).timestamp()
+
+        return datetime.datetime.now(datetime.timezone.utc).timestamp()
 
 
 # Try to import as absolute when used as module, import as relative for autotests
