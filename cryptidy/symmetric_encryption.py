@@ -19,15 +19,15 @@ __intname__ = "cryptidy.symmetric_encryption"
 __author__ = "Orsiris de Jong"
 __copyright__ = "Copyright (C) 2018-2023 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
-__version__ = "1.2.3"
-__build__ = "2024101801"
+__version__ = "1.2.4"
+__build__ = "2024121001"
 
 
 import pickle
 import sys
 from base64 import b64encode, b64decode
 from binascii import Error as binascii_Error
-from datetime import datetime
+import datetime
 from logging import getLogger
 
 if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 4):
@@ -37,7 +37,7 @@ if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] 
         """
         Get UTC timestamp
         """
-        return time.mktime(datetime.utcnow().timetuple())
+        return time.mktime(datetime.datetime.utcnow().timetuple())
 
 else:
 
@@ -45,7 +45,7 @@ else:
         """
         Get UTC timestamp
         """
-        return datetime.utcnow().timestamp()
+        return datetime.datetime.now(datetime.UTC).timestamp()
 
 
 # Try to import as absolute when used as module, import as relative for autotests
@@ -160,7 +160,7 @@ def aes_encrypt_message(msg, aes_key):
 def decrypt_message_hf(
     msg, key, header=None, footer=None, random_header_len=0, random_footer_len=0
 ):
-    # type: (Union[bytes, str], bytes, Union[str, bytes], Union[str, bytes], int, int) -> Tuple[datetime, Any]
+    # type: (Union[bytes, str], bytes, Union[str, bytes], Union[str, bytes], int, int) -> Tuple[datetime.datetime, Any]
     """
     Optional (user called fn) remove headers / footers before decrypting
     """
@@ -170,7 +170,7 @@ def decrypt_message_hf(
 
 
 def decrypt_message(msg, aes_key):
-    # type: (Union[bytes, str], bytes) -> Tuple[datetime, Any]
+    # type: (Union[bytes, str], bytes) -> Tuple[datetime.datetime, Any]
     """
     Simple base64 wrapper for aes_decrypt_message that adds optional headers and footers for message identification
     """
@@ -185,7 +185,7 @@ def decrypt_message(msg, aes_key):
 
 
 def aes_decrypt_message(msg, aes_key):
-    # type: (bytes, bytes) -> Tuple[datetime, Any]
+    # type: (bytes, bytes) -> Tuple[datetime.datetime, Any]
     """
     AES decrypt a python object / bytes / string and check the encryption timestamp
 
@@ -201,7 +201,7 @@ def aes_decrypt_message(msg, aes_key):
         if source_timestamp > timestamp_now:
             msg = "*** WARNING *** Encrypted data timestamp is in future\n"
             logger.warning(msg)
-        source_timestamp = datetime.fromtimestamp(source_timestamp)
+        source_timestamp = datetime.datetime.fromtimestamp(source_timestamp)
     except (
         TypeError,
         AttributeError,
