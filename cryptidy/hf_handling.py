@@ -17,13 +17,15 @@ __intname__ = "cryptidy.hf_handling"
 __author__ = "Orsiris de Jong"
 __copyright__ = "Copyright (C) 2018-2023 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
-__version__ = "1.2.0"
-__build__ = "2023032601"
+__version__ = "1.2.1"
+__build__ = "2024121001"
 
+
+from datetime import datetime
 
 # Python 2.7 compat fixes (missing typing and FileNotFoundError)
 try:
-    from typing import Any, Union, Callable
+    from typing import Any, Union, Callable, Tuple
 except ImportError:
     pass
 # noqaF401: generate_key is not used here, but should be available from the pacakge, disabling flake8 check
