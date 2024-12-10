@@ -15,7 +15,7 @@ Versioning semantics:
 
 __intname__ = "cryptidy.hf_handling"
 __author__ = "Orsiris de Jong"
-__copyright__ = "Copyright (C) 2018-2023 Orsiris de Jong"
+__copyright__ = "Copyright (C) 2018-2024 Orsiris de Jong"
 __licence__ = "BSD 3 Clause"
 __version__ = "1.2.1"
 __build__ = "2024121001"
