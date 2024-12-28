@@ -186,13 +186,19 @@ def decrypt_message(msg, aes_key):
     return aes_decrypt_message(decoded_msg, aes_key)
 
 
-def aes_decrypt_message(msg, aes_key):
+def aes_decrypt_message(msg, aes_key, error_handling=3):
     # type: (bytes, bytes) -> Tuple[datetime.datetime, Any]
     """
     AES decrypt a python object / bytes / string and check the encryption timestamp
 
+    error_handling is the level of error handling:
+    3 means all errors and warnings are handled
+    2 means only errors are handled and warnings are ignored
+    1 means everything is ignored (this may cause some things to break, only use if absolutely necessary)
+
     :param msg: original aes encrypted data
     :param aes_key: aes encryption key
+    :param error_handling: level of error handling
     :return: original data
     """
     nonce, tag, timestamp, ciphertext = (msg[0:16], msg[16:32], msg[32:64], msg[64:])
@@ -200,7 +206,7 @@ def aes_decrypt_message(msg, aes_key):
     try:
         source_timestamp = float(unpad(timestamp.decode("utf-8")))
         timestamp_now = timestamp_get()
-        if source_timestamp > timestamp_now:
+        if source_timestamp > timestamp_now and not error_handling < 3:
             msg = "*** WARNING *** Encrypted data timestamp is in future\n"
             logger.warning(msg)
         source_timestamp = datetime.datetime.fromtimestamp(source_timestamp)

@@ -170,13 +170,19 @@ def decrypt_message_hf(
     )
 
 
-def decrypt_message(msg, private_key):
+def decrypt_message(msg, private_key, error_handling=3):
     # type: (Union[bytes, str], str) -> Tuple[datetime, Any]
     """
     Simple base64 wrapper for rsa_decrypt_message
 
+    error_handling is the level of error handling:
+    3 means all errors and warnings are handled
+    2 means only errors are handled and warnings are ignored
+    1 means everything is ignored (this may cause some things to break, only use if absolutely necessary)
+
     :param msg: b64 encoded original rsa encrypted data
     :param private_key: rsa private key
+    :param error_handling: level of error handling
     :return: (bytes): rsa decrypted data
     """
     verify_key(private_key, "RSA PRIVATE")
@@ -187,16 +193,22 @@ def decrypt_message(msg, private_key):
             "decrypt_message accepts b64 encoded byte objects"
         )  # pylint: disable=W0707,raise-missing-from
 
-    return rsa_decrypt_message(decoded_msg, private_key)
+    return rsa_decrypt_message(decoded_msg, private_key, error_handling)
 
 
-def rsa_decrypt_message(msg, private_key):
+def rsa_decrypt_message(msg, private_key, error_handling=3):
     # type: (bytes, str) -> Tuple[datetime, Any]
     """
     RSA decrypt a python object / bytes / string and check the encryption timestamp
 
+    error_handling is the level of error handling:
+    3 means all errors and warnings are handled
+    2 means only errors are handled and warnings are ignored
+    1 means everything is ignored (this may cause some things to break, only use if absolutely necessary)
+
     :param msg: original rsa encrypted data
     :param private_key: rsa encryption key
+    :param error_handling: level of error handling
     :return: original data
     """
     private_key = RSA.import_key(private_key)
@@ -226,4 +238,4 @@ def rsa_decrypt_message(msg, private_key):
         else:
             exec(err + " from None")
 
-    return aes_decrypt_message(aes_encrypted_msg, session_key)
+    return aes_decrypt_message(aes_encrypted_msg, session_key, error_handling)
