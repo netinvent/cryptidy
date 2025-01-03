@@ -201,7 +201,7 @@ def aes_decrypt_message(msg, aes_key, ignore_warnings=False):
     try:
         source_timestamp = float(unpad(timestamp.decode("utf-8")))
         timestamp_now = timestamp_get()
-        if source_timestamp > timestamp_now and not ignore_warnings=True:
+        if source_timestamp > timestamp_now and ignore_warnings is not True:
             msg = "*** WARNING *** Encrypted data timestamp is in future\n"
             logger.warning(msg)
         source_timestamp = datetime.datetime.fromtimestamp(source_timestamp)
