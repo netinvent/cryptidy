@@ -191,7 +191,7 @@ def decrypt_message(msg, private_key, ignore_warnings=False):
     return rsa_decrypt_message(decoded_msg, private_key, ignore_warnings)
 
 
-def rsa_decrypt_message(msg, private_key, ignore_warning=False):
+def rsa_decrypt_message(msg, private_key, ignore_warnings=False):
     # type: (bytes, str) -> Tuple[datetime, Any]
     """
     RSA decrypt a python object / bytes / string and check the encryption timestamp
