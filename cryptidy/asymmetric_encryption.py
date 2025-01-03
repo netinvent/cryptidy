@@ -170,13 +170,14 @@ def decrypt_message_hf(
     )
 
 
-def decrypt_message(msg, private_key):
+def decrypt_message(msg, private_key, ignore_warnings=False):
     # type: (Union[bytes, str], str) -> Tuple[datetime, Any]
     """
     Simple base64 wrapper for rsa_decrypt_message
 
     :param msg: b64 encoded original rsa encrypted data
     :param private_key: rsa private key
+    :param ignore_warnings: whether to ignore warnings
     :return: (bytes): rsa decrypted data
     """
     verify_key(private_key, "RSA PRIVATE")
@@ -187,16 +188,17 @@ def decrypt_message(msg, private_key):
             "decrypt_message accepts b64 encoded byte objects"
         )  # pylint: disable=W0707,raise-missing-from
 
-    return rsa_decrypt_message(decoded_msg, private_key)
+    return rsa_decrypt_message(decoded_msg, private_key, ignore_warnings)
 
 
-def rsa_decrypt_message(msg, private_key):
+def rsa_decrypt_message(msg, private_key, ignore_warnings=False):
     # type: (bytes, str) -> Tuple[datetime, Any]
     """
     RSA decrypt a python object / bytes / string and check the encryption timestamp
 
     :param msg: original rsa encrypted data
     :param private_key: rsa encryption key
+    :param ignore_warnings: whether to ignore warnings
     :return: original data
     """
     private_key = RSA.import_key(private_key)
@@ -226,4 +228,4 @@ def rsa_decrypt_message(msg, private_key):
         else:
             exec(err + " from None")
 
-    return aes_decrypt_message(aes_encrypted_msg, session_key)
+    return aes_decrypt_message(aes_encrypted_msg, session_key, ignore_warnings)
